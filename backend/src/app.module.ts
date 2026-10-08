@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './controllers/app.controller';
 import { AppService } from './services/app.service';
-// import { ActivityModule } from './modules/comps/activity.module';
+import { ProjectModule } from './modules/project.module';
+import { AthleteModule } from './modules/athlete.module';
 
 @Module({
   imports: [
-    // ActivityModule,
+    ProjectModule,
+    AthleteModule,
     MongooseModule.forRoot('mongodb://localhost:27017/sportsmeet'),
   ],
   controllers: [AppController],

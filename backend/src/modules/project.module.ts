@@ -1,8 +1,8 @@
 // 应用程序的根模块
 import { Module } from '@nestjs/common';
-import { Activity, ActivitySchema } from 'src/schemas/comps/activity.schema';
-import { ActivityController } from 'src/controllers/comps/activity.controller';
-import { ActivityService } from 'src/services/comps/activity.service';
+import { Project, ProjectSchema } from 'src/schemas/project.schema';
+import { ProjectController } from 'src/controllers/project.controller';
+import { ProjectService } from 'src/services/project.service';
 
 // 如果想在另外的模块中使用这个模型，将MongooseModule添加到UserModule的exports部分并在其他模块中导入UserModule
 // const UserMongooseModule = MongooseModule.forFeature([
@@ -11,15 +11,15 @@ import { ActivityService } from 'src/services/comps/activity.service';
 //   // [collection] «String» name (optional, inferred from model name)
 //   { name: User.name, schema: UserSchema, collection: User.getCollectionName() },
 // ]);
-const ActivityMongooseModule = Activity.getMongooseModule(
-  Activity.name,
-  ActivitySchema,
+const ProjectMongooseModule = Project.getMongooseModule(
+  Project.name,
+  ProjectSchema,
 );
 
 @Module({
-  imports: [ActivityMongooseModule],
-  controllers: [ActivityController],
-  providers: [ActivityService],
-  exports: [ActivityMongooseModule],
+  imports: [ProjectMongooseModule],
+  controllers: [ProjectController],
+  providers: [ProjectService],
+  exports: [ProjectMongooseModule],
 })
-export class ActivityModule {}
+export class ProjectModule {}
