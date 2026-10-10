@@ -17,6 +17,18 @@ export class Athlete extends Base {
 
   @Prop({
     required: true,
+    min: 1,
+  })
+  class: string; // 班级 101,102,103
+
+  @Prop({
+    required: true,
+    min: 1,
+  })
+  grade: number; // 年级 1,2,3
+
+  @Prop({
+    required: true,
     default: 0,
   })
   gender: number; // 0: 男子，1：女子
@@ -31,7 +43,7 @@ export class Athlete extends Base {
     required: false,
     default: [],
   })
-  projects: Array<string>; // ["100米", "200米"]
+  projects: Array<string>; // ["100M", "200M"]
 
   static getCollectionName(): string {
     return 'athlete';

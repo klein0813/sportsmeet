@@ -13,8 +13,15 @@ export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Get()
-  get() {
-    return this.projectService.get();
+  get(@Query() query: any) {
+    const { finish } = query;
+    const q = {};
+    if (finish == '1') {
+      q['finish'] = true;
+    } else if (finish == '0') {
+      q['finish'] = false;
+    }
+    return this.projectService.get(q);
   }
 
   @Get(API_COUNT)

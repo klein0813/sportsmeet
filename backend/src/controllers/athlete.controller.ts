@@ -15,10 +15,17 @@ export class AthleteController {
 
   @Get()
   get(@Query() query: any) {
-    if (query.keyword) {
-      return this.athleteService.findByKeyword(query.keyword);
+    const q = {};
+    if (query?.projectName) {
+      q['projects'] = query.projectName;
     }
-    return this.athleteService.get();
+    if (query?.projectGroup) {
+      q['gender'] = query.projectGroup;
+    }
+    if (query?.keyword) {
+      return this.athleteService.findByKeyword(query.keyword, q);
+    }
+    return this.athleteService.get(q);
   }
 
   @Get(API_SID)

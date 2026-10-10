@@ -14,8 +14,11 @@ export class ProjectService {
   //   password: '',
   // };
 
-  get() {
-    return this.projectModel.find({ isDeleted: false });
+  get(query) {
+    return this.projectModel.find({
+      ...query,
+      isDeleted: false,
+    });
   }
 
   count() {

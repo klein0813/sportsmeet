@@ -29,6 +29,7 @@
     "@nestjs/websockets": "^10.2.8",
     "cache-manager": "^5.2.4",
     "cache-manager-redis-store": "^2.0.0",
+    "exceljs": "^4.4.0",
     "mongodb": "^6.2.0",
     "mongoose": "^8.0.0",
     "reflect-metadata": "^0.1.13",

@@ -9,8 +9,8 @@ export class AthleteService {
     @InjectModel('Athlete') private athleteModel: Model<AthleteDocument>,
   ) {}
 
-  get() {
-    return this.athleteModel.find({ isDeleted: false });
+  get(query) {
+    return this.athleteModel.find({ ...query, isDeleted: false });
   }
 
   count() {
@@ -25,12 +25,13 @@ export class AthleteService {
     return this.athleteModel.findOne({ name, isDeleted: false });
   }
 
-  findByKeyword(keyword: string) {
+  findByKeyword(keyword: string, query) {
     return this.athleteModel.find({
       name: {
         $regex: `^${keyword}`, // ^ 表示以关键词开头
         $options: 'i', // i 表示不区分大小写
       },
+      ...query,
     });
   }
 
