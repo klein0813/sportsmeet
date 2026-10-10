@@ -11,7 +11,7 @@ export default defineConfig({
     hmr: true,
     proxy: {
       '/record': {  // 直接用接口的真实前缀
-        target: 'http://172.16.50.65:31245',
+        target: 'http://172.16.102.37:31245',
         changeOrigin: true,
         // 不需要 rewrite，因为路径本来就一致
       },
