@@ -44,11 +44,17 @@ export class RecordController {
     if (query.projectName && PROJECTS.includes(query.projectName)) {
       q['projectName'] = query.projectName;
     }
-    if (STR_GROUPS.includes[query.group]) {
+    if (STR_GROUPS.includes(query.group)) {
       q['projectGroup'] = Number.parseInt(query.group);
     }
-    if (STR_ROUNDS.includes[query.round]) {
-      q['projectGroup'] = query.round;
+    if (STR_ROUNDS.includes(query.round)) {
+      q['round'] = Number.parseInt(query.round);
+    }
+    if (query.class && !isNaN(Number(query.class))) {
+      q['athleteClass'] = query.class;
+    }
+    if (query.sid && !isNaN(Number(query.sid))) {
+      q['athleteSid'] = query.sid;
     }
     return this.recordService.get(page, size, q);
   }

@@ -39,7 +39,7 @@ export class RecordService {
         .limit(size)
         .lean()
         .exec(),
-      this.recordModel.countDocuments(),
+      this.recordModel.countDocuments(q),
     ]);
     return {
       list,

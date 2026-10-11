@@ -13,6 +13,7 @@ const pagination = ref({
   showTotal: (total) => `共 ${total} 条`,
 });
 getPageRecords(toRaw(pagination.value));
+let lastSearchQuery = {};
 
 const records = ref([]);
 const openAddRecoreModal = ref(false);
@@ -100,7 +101,7 @@ const exportData = () => {
 };
 
 const onPaginationChange = (pagination) => {
-  getPageRecords(pagination);
+  getPageRecords(pagination, lastSearchQuery);
 }
 function getPageRecords(cpagination, query={}) {
   const { current, pageSize } = cpagination;
@@ -128,6 +129,7 @@ function getPageRecords(cpagination, query={}) {
 const onSearch = (data) => {
   pagination.value.current = 1;
   pagination.value.pageSize = 10;
+  lastSearchQuery = data;
   getPageRecords(toRaw(pagination.value), data);
 }
 </script>

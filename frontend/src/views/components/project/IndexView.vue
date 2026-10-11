@@ -1,15 +1,12 @@
 <script setup>
-import { ref, h } from 'vue';
+import { ref, reactive, h } from 'vue';
 import { Tag } from 'ant-design-vue'
+import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { getProjects } from '@/api';
 import { GROUP_LEVEL_MAPPING } from '@/utils/constant'
-
+{/* <EditOutlined /> */}
 const data = ref([]);
 
-getProjects().then((res) => {
-  console.log(res);
-  data.value = res.data;
-});
 const columns = [
   {
     title: '项目名',
@@ -28,8 +25,11 @@ const columns = [
   },
   {
     title: '记录',
+    key: 'record',
     dataIndex: 'record',
-    customRender: ({ text }) => text == -1 ? '-' : text,
+    slots: {
+      customRender: 'record',
+    },
   },
   {
     title: '状态',
@@ -42,10 +42,42 @@ const columns = [
     },
   },
 ];
+getPageProjects()
+
+const editableData = reactive({});
+const edit = key => {
+  console.log('edit', key)
+  editableData[key] = (data.value.filter(item => key === item._id)[0]).record;
+};
+const save = key => {
+  console.log('save', key, editableData[key]);
+  const t = data.value.filter(item => key === item._id)[0];
+  t.record = editableData[key];
+  delete editableData[key];
+};
+
+function getPageProjects() {
+  getProjects().then((res) => {
+    console.log(res);
+    data.value = res.data;
+  });
+}
 </script>
 
 <template>
   <a-table :columns="columns" :data-source="data" :pagination="false" bordered>
+    <template #record="{ text, record }">
+      <div class="editable-cell">
+        <div v-if="editableData[record._id]" class="editable-cell-input-wrapper">
+          <a-input v-model:value="editableData[record._id]" @pressEnter="save(record._id)" />
+          <check-outlined class="editable-cell-icon-check" @click="save(record._id)" />
+        </div>
+        <div v-else class="editable-cell-text-wrapper">
+          {{ text == -1 ? '-' : text }}
+          <edit-outlined v-if="!record.finish" class="editable-cell-icon" @click="edit(record._id)" />
+        </div>
+      </div>
+    </template>
   </a-table>
 </template>
 
@@ -55,5 +87,45 @@ const columns = [
 }
 :deep(.ant-table-tbody > tr > td) {
   text-align: center;
+}
+.editable-cell {
+  position: relative;
+  .editable-cell-input-wrapper,
+  .editable-cell-text-wrapper {
+    padding-right: 24px;
+  }
+
+  .editable-cell-text-wrapper {
+    padding: 5px 24px 5px 5px;
+  }
+
+  .editable-cell-icon,
+  .editable-cell-icon-check {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    cursor: pointer;
+  }
+
+  .editable-cell-icon {
+    margin-top: 4px;
+    display: none;
+  }
+
+  .editable-cell-icon-check {
+    line-height: 28px;
+  }
+
+  .editable-cell-icon:hover,
+  .editable-cell-icon-check:hover {
+    color: #108ee9;
+  }
+
+  .editable-add-btn {
+    margin-bottom: 8px;
+  }
+}
+.editable-cell:hover .editable-cell-icon {
+  display: inline-block;
 }
 </style>

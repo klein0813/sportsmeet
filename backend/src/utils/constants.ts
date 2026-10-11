@@ -55,7 +55,7 @@ export const PROJECTS = [
   // 'ranking',
 ];
 export const STR_GROUPS = ['0', '1', '2'];
-export const STR_ROUNDS = ['0', '1', '2'];
+export const STR_ROUNDS = ['1', '2', '3'];
 export const PROJECT_DATA = {
   '100M': {
     type: 1, // 0, 田赛，1，竞赛
