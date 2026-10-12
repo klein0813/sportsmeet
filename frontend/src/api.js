@@ -7,9 +7,17 @@ const instance = axios.create({
   headers: {}
 })
 
-export async function getProjects(finish) {
+export async function getProjects(finish='') {
   try {
     return instance.get(`/project?finish=${finish}`);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateRecord(id, record) {
+  try {
+    return instance.post('/project/update-record', { id, record });
   } catch (error) {
     console.error(error);
   }

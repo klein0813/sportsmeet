@@ -1,9 +1,16 @@
 <script setup>
 import { ref, watch, toRaw } from 'vue';
 import { addRecords } from '@/api';
-import { EVENT_RECORE_MODAL_CLOSE, GROUP_LEVEL_MAPPING, GENDER_MAPPING, PROJECT_ROUND_MAPPING } from '@/utils/constant';
 import { levelNumber2String } from '@/utils/common';
 import RecordForm from './RecordForm.vue';
+import { message } from 'ant-design-vue';
+import {
+  EVENT_RECORE_MODAL_CLOSE,
+  GROUP_LEVEL_MAPPING,
+  GENDER_MAPPING,
+  PROJECT_ROUND_MAPPING,
+  EVENT_RECORE_ADD_SUCCESS,
+} from '@/utils/constant';
 
 const props = defineProps(['projects', 'show', 'rounds', 'classes']);
 const recordFormRef = ref(null)
@@ -26,15 +33,18 @@ const handleOk = () => {
       }
     })
   };
-  addRecords(data).then(() => {
-    open.value = false;
-    loadingAddBtn.value = false;
-    emits(EVENT_RECORE_MODAL_CLOSE);
+  addRecords(data).then(({ data }) => {
+    if (data?.length) {
+      open.value = false;
+      loadingAddBtn.value = false;
+      emits(EVENT_RECORE_ADD_SUCCESS);
+      message.success('成绩添加成功');
+      emits(EVENT_RECORE_MODAL_CLOSE);
+    }
   });
 };
 
 const addRecord = ({ data, athlete, project }) => {
-  console.log('addRecord', data, athlete, project);
   records.value.push({
     key: records.value.length + 1,
     projectId: project.id,
@@ -53,7 +63,7 @@ watch(() => props.show, (newVal) => {
   open.value = newVal;
 });
 
-const emits = defineEmits([EVENT_RECORE_MODAL_CLOSE]);
+const emits = defineEmits([EVENT_RECORE_MODAL_CLOSE, EVENT_RECORE_ADD_SUCCESS]);
 
 const closeModal= () => {
   records.value = [];

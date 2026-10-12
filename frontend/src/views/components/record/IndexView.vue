@@ -1,5 +1,6 @@
 <script setup>
-import { ref, toRaw } from 'vue';
+import { ref, toRaw, h } from 'vue';
+import { Tag } from 'ant-design-vue'
 import { getProjects, getRecords, getSclasses, exportRecord } from '@/api';
 import { levelNumber2String } from '@/utils/common';
 import AddRecoreModal from './AddRecoreModal.vue';
@@ -58,14 +59,14 @@ const columns = ref([
     key: 'round',
   },
   {
-    title: '班级',
-    dataIndex: 'class',
-    key: 'class',
-  },
-  {
     title: '年级',
     dataIndex: 'grade',
     key: 'grade',
+  },
+  {
+    title: '班级',
+    dataIndex: 'class',
+    key: 'class',
   },
   {
     title: '号码',
@@ -81,7 +82,13 @@ const columns = ref([
     title: '成绩',
     dataIndex: 'level',
     key: 'level',
-    customRender: ({ text, record }) => levelNumber2String(record.projectName, text),
+    customRender: ({ text, record }) => {
+      const te = levelNumber2String(record.projectName, text);
+      if (record.recordBreaking) {
+        return h(Tag, { color: 'green' }, () => `${te}(破)`);
+      }
+      return h(Tag, () => te);
+    }
   },
   {
     title: '名次',
@@ -103,7 +110,7 @@ const exportData = () => {
 const onPaginationChange = (pagination) => {
   getPageRecords(pagination, lastSearchQuery);
 }
-function getPageRecords(cpagination, query={}) {
+function getPageRecords(cpagination={ current: 1, pageSize: 10 }, query={}) {
   const { current, pageSize } = cpagination;
   getRecords({ current, pageSize, ...query }).then(({ data: { page, size, total, list }}) => {
     pagination.value.current = page;
@@ -121,6 +128,7 @@ function getPageRecords(cpagination, query={}) {
         level: item.level,
         ranking: item.ranking,
         score: item.score,
+        recordBreaking: item.recordBreaking,
       }
     });
   });
@@ -146,6 +154,7 @@ const onSearch = (data) => {
     <AddRecoreModal
       :show="openAddRecoreModal"
       @modal-close="openAddRecoreModal = false"
+      @record-add-success="getPageRecords"
       :projects="projects"
       :classes="classInfos"
       :rounds="PROJECT_ROUND"
@@ -155,7 +164,9 @@ const onSearch = (data) => {
       :dataSource="records"
       :columns="columns"
       :pagination="pagination"
-      @change="onPaginationChange" bordered>
+      @change="onPaginationChange"
+      bordered
+    >
     </a-table>
   </div>
 </template>

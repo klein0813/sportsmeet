@@ -30,6 +30,11 @@ export class Project extends Base {
 
   @Prop({
     required: false,
+  })
+  newRecord: number; // 记录
+
+  @Prop({
+    required: false,
     type: MongooseSchema.Types.Mixed,
   })
   recordHolder: any; // { name: string; class: number; grade: number; flag: string }; 记录保持者
@@ -42,9 +47,9 @@ export class Project extends Base {
 
   @Prop({
     required: true,
-    default: false,
+    default: 0,
   })
-  finish: boolean; // false, 未完赛，true，已完赛
+  finish: boolean; // 0, 未完赛，_ _ _ 最高位：高三是否完赛，次位：高二是否完赛，最低为：高一是否完赛
   // @Prop({
   //   required: false,
   //   type: MongooseSchema.Types.Mixed,

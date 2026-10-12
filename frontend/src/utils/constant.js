@@ -5,7 +5,12 @@ export const PORT = 31245;
 
 export const EVENT_RECORE_MODAL_CLOSE = 'modal-close'
 export const EVENT_RECORE_ADD = 'record-add';
+export const EVENT_RECORE_ADD_SUCCESS = 'record-add-success';
 export const EVENT_RECORE_SEARCN = 'search';
+
+export const REWARD_SCORE = {
+  0: 10,
+};
 
 export const GROUP_LEVEL_MAPPING = {
   '100M': '100米',

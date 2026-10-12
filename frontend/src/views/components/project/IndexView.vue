@@ -2,8 +2,10 @@
 import { ref, reactive, h } from 'vue';
 import { Tag } from 'ant-design-vue'
 import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue'
-import { getProjects } from '@/api';
-import { GROUP_LEVEL_MAPPING } from '@/utils/constant'
+import { message } from 'ant-design-vue';
+import { getProjects, updateRecord } from '@/api';
+import { GROUP_LEVEL_MAPPING, REWARD_SCORE } from '@/utils/constant'
+import { levelNumber2String } from '@/utils/common';
 {/* <EditOutlined /> */}
 const data = ref([]);
 
@@ -32,6 +34,17 @@ const columns = [
     },
   },
   {
+    title: '新记录',
+    key: 'newRecord',
+    dataIndex: 'newRecord',
+    customRender: ({ text, record }) => text ? h(Tag, { color: '#f50' }, () => levelNumber2String(record.name, `${text}`)) : '',
+  },
+  {
+    title: '奖励得分',
+    dataIndex: 'rewardScore',
+    customRender: ({ record }) => (record.category == 0 && record.record > 0) ? REWARD_SCORE[record.category] : '-',
+  },
+  {
     title: '状态',
     dataIndex: 'finish',
     customRender: ({ text }) => {
@@ -46,14 +59,21 @@ getPageProjects()
 
 const editableData = reactive({});
 const edit = key => {
-  console.log('edit', key)
   editableData[key] = (data.value.filter(item => key === item._id)[0]).record;
 };
 const save = key => {
   console.log('save', key, editableData[key]);
   const t = data.value.filter(item => key === item._id)[0];
   t.record = editableData[key];
-  delete editableData[key];
+  updateRecord(t._id, t.record).then((res) => {
+    if (res) {
+      delete editableData[key];
+      message.success('更新记录成功');
+    } else {
+      message.success('更新记录失败');
+    }
+  });
+
 };
 
 function getPageProjects() {
@@ -69,11 +89,11 @@ function getPageProjects() {
     <template #record="{ text, record }">
       <div class="editable-cell">
         <div v-if="editableData[record._id]" class="editable-cell-input-wrapper">
-          <a-input v-model:value="editableData[record._id]" @pressEnter="save(record._id)" />
+          <a-input-number :min="1" :precision="0" v-model:value="editableData[record._id]" @pressEnter="save(record._id)" />
           <check-outlined class="editable-cell-icon-check" @click="save(record._id)" />
         </div>
         <div v-else class="editable-cell-text-wrapper">
-          {{ text == -1 ? '-' : text }}
+          <a-tag>{{ text == -1 ? '-' : levelNumber2String(record.name, `${text}`) }}</a-tag>
           <edit-outlined v-if="!record.finish" class="editable-cell-icon" @click="edit(record._id)" />
         </div>
       </div>

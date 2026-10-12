@@ -72,7 +72,12 @@ export class Record extends Base {
     required: true,
     default: 1,
   })
-  category: number; // 0, 单项；1，团体赛
+  category: number; // 0, 单项；1，团体赛, 2, 班级赛
+
+  @Prop({
+    required: false,
+  })
+  recordBreaking: boolean; // 是否破纪录
 
   @Prop({
     required: true,

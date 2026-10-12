@@ -11,6 +11,7 @@ import {
   SCORE_RULE,
   FLAG,
   PROJECT_DATA,
+  REWARD_SCORE,
 } from 'src/utils/constants';
 
 @Injectable()
@@ -124,6 +125,14 @@ export class RecordService {
           ...data,
           level: record.level,
         };
+        // 是否破纪录，成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
+        // 目前只支持个人项目的破纪录计分
+        if (
+          (project.type === 1 && record.level < project.record) ||
+          (project.type === 0 && record.level > project.record)
+        ) {
+          res['recordBreaking'] = true;
+        }
         // 成绩并列，排名相同，下一名次跳过
         if (lastLevel == record.level) {
           res['ranking'] = lastRanking;
@@ -166,6 +175,11 @@ export class RecordService {
                 originScore: sclass.score,
               };
             }
+            if (res['recordBreaking']) {
+              updateSclass[className].text += `+${
+                REWARD_SCORE[project.category]
+              }`;
+            }
           }
         }
         return res;
@@ -189,11 +203,16 @@ export class RecordService {
         },
       );
     });
-    // 预决赛、决赛，说明比赛结束，标注项目比赛完成
+    // 预决赛、决赛，说明比赛结束
+    // 1.标注项目比赛完成
+    // 2.若破纪录了，更新记录
     if (datas.round >= 2) {
-      await this.projectModel.findByIdAndUpdate(datas.projectId, {
-        finish: true,
-      });
+      const updater = { finish: true };
+      if (records[0]['recordBreaking']) {
+        const newRecord = records[0]['level'];
+        updater['newRecord'] = newRecord;
+      }
+      await this.projectModel.findByIdAndUpdate(datas.projectId, updater);
     }
 
     return this.recordModel.insertMany(records);
@@ -220,13 +239,29 @@ export class RecordService {
       {
         $set: {
           fullName: {
-            $concat: ['$athleteClass', ' ', '$athleteName', ' ', '$level'],
+            $concat: [
+              '$athleteClass',
+              ' ',
+              '$athleteName',
+              ' ',
+              '$level',
+              {
+                $cond: [
+                  '$recordBreaking', // 条件：boolean 字段
+                  ' (破)', // true 时的字符串
+                  '', // false 时的字符串
+                ],
+              },
+            ],
           },
         },
       },
       {
         $group: {
-          _id: { ranking: '$ranking', projectGroup: '$projectGroup' },
+          _id: {
+            ranking: '$ranking',
+            projectGroup: '$projectGroup',
+          },
           items: {
             $push: {
               k: '$projectName',
@@ -247,7 +282,10 @@ export class RecordService {
         $replaceRoot: {
           newRoot: {
             $mergeObjects: [
-              { ranking: '$ranking', projectGroup: '$projectGroup' },
+              {
+                ranking: '$ranking',
+                projectGroup: '$projectGroup',
+              },
               '$items',
             ],
           },

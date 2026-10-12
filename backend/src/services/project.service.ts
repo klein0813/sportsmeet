@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { ProjectDocument } from 'src/schemas/project.schema';
 
 @Injectable()
@@ -39,5 +39,20 @@ export class ProjectService {
 
   batchInsert(datas) {
     return this.projectModel.insertMany(datas);
+  }
+
+  async updateRecord(id, record) {
+    const res = await this.projectModel.updateOne(
+      { _id: new mongoose.Types.ObjectId(id), finish: false },
+      {
+        $set: {
+          record: record,
+        },
+      },
+    );
+    if (res.modifiedCount) {
+      return true;
+    }
+    return false;
   }
 }

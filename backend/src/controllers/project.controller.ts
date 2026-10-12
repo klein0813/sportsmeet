@@ -6,6 +6,7 @@ import {
   API_FIND,
   API_ID,
   API_BATCH,
+  API_UPDATE_RECORD,
 } from 'src/utils/constants';
 
 @Controller(API_PROJECT)
@@ -52,5 +53,14 @@ export class ProjectController {
   @Post(API_BATCH)
   batchInsert(@Body() body: any) {
     return this.projectService.batchInsert(body.data);
+  }
+
+  @Post(API_UPDATE_RECORD)
+  updateRecord(@Body() body: any) {
+    const { id, record } = body;
+    if (!isNaN(Number(record)) && Number.parseInt(record)) {
+      return this.projectService.updateRecord(id, record);
+    }
+    return false;
   }
 }

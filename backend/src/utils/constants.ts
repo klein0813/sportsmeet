@@ -1,5 +1,6 @@
 export const EVENT_HOME = 'home';
 export const API_PROJECT = 'project';
+export const API_UPDATE_RECORD = 'update-record';
 export const API_INIT = 'init';
 export const API_ID = ':id';
 export const API_BATCH = 'batch';
@@ -20,6 +21,9 @@ export const SCORE_RULE = {
   0: [7, 5, 4, 3, 2, 1],
   1: [14, 10, 8, 6, 4, 2],
   2: [14, 10, 8, 6, 4, 2],
+};
+export const REWARD_SCORE = {
+  0: 10,
 };
 export const GRADE_MAPPING = {
   1: '高一',

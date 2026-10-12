@@ -9,10 +9,10 @@ const formState = reactive({
   round: undefined,
   class: undefined,
   sid: undefined,
+  recordBreaking: undefined,
 });
 
 const onSubmit = () => {
-  console.log('onSubmit', toRaw(formState))
   emits(EVENT_RECORE_SEARCN, toRaw(formState));
 };
 
@@ -22,6 +22,7 @@ const onReset = () => {
   formState.round = undefined;
   formState.class = undefined;
   formState.sid = undefined;
+  formState.recordBreaking = undefined;
   emits(EVENT_RECORE_SEARCN, toRaw(formState));
 }
 
@@ -48,6 +49,12 @@ const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v,
     </a-form-item>
     <a-form-item class="form-item" label="号码">
       <a-input v-model:value="formState.sid" style="width: 110px" placeholder="号码"></a-input>
+    </a-form-item>
+    <a-form-item class="form-item" label="破记录">
+      <a-select v-model:value="formState.recordBreaking" placeholder="破记录">
+        <a-select-option value="1">是</a-select-option>
+        <a-select-option value="0">否</a-select-option>
+      </a-select>
     </a-form-item>
     <a-form-item>
       <a-button

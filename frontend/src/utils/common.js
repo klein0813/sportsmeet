@@ -4,7 +4,7 @@ export function levelNumber2String(projectName, numStr) {
   if (!numStr) return numStr;
   switch (LEVEL_TYPE_MAPPING[projectName]) {
     case 0: {
-      const ms = numStr.slice(-2);
+      const ms = numStr.slice(-2).padStart(2, '0');
       const sec = numStr.slice(-4, -2);
       const min = numStr.slice(0, -4);
       return min ? `${min}'${sec}"${ms}` : `${sec || 0}"${ms}`;

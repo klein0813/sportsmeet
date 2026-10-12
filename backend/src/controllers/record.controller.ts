@@ -56,6 +56,9 @@ export class RecordController {
     if (query.sid && !isNaN(Number(query.sid))) {
       q['athleteSid'] = query.sid;
     }
+    if (query.recordBreaking && ['0', '1'].includes(query.recordBreaking)) {
+      q['recordBreaking'] = query.recordBreaking === '1';
+    }
     return this.recordService.get(page, size, q);
   }
 
@@ -71,7 +74,6 @@ export class RecordController {
 
   @Post(API_BATCH)
   batchInsert(@Body() body: any) {
-    console.log(API_RECORD, API_BATCH, body.data);
     return this.recordService.batchInsert(body.data);
   }
 
