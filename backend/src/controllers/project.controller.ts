@@ -15,12 +15,10 @@ export class ProjectController {
 
   @Get()
   get(@Query() query: any) {
-    const { finish } = query;
+    const { status, grade } = query;
     const q = {};
-    if (finish == '1') {
-      q['finish'] = true;
-    } else if (finish == '0') {
-      q['finish'] = false;
+    if (['0', '1'].includes(status) && ['1', '2', '3'].includes(grade)) {
+      q[`grade${grade}Done`] = status == '1';
     }
     return this.projectService.get(q);
   }

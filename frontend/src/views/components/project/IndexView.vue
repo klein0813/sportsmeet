@@ -46,9 +46,9 @@ const columns = [
   },
   {
     title: '状态',
-    dataIndex: 'finish',
-    customRender: ({ text }) => {
-      if (text == true) {
+    dataIndex: 'status',
+    customRender: ({ record }) => {
+      if (record['grade1Done'] && record['grade2Done'] && record['grade3Done']) {
         return h(Tag, { color: 'success' }, () => '已完赛'); 
       }
       return h(Tag, { color: 'error' }, () => '未完赛'); 
@@ -85,7 +85,13 @@ function getPageProjects() {
 </script>
 
 <template>
-  <a-table :columns="columns" :data-source="data" :pagination="false" bordered>
+  <a-table
+    :columns="columns"
+    :data-source="data"
+    :pagination="false"
+    :locale="{ emptyText: '暂无数据' }"
+    bordered
+  >
     <template #record="{ text, record }">
       <div class="editable-cell">
         <div v-if="editableData[record._id]" class="editable-cell-input-wrapper">
@@ -94,7 +100,11 @@ function getPageProjects() {
         </div>
         <div v-else class="editable-cell-text-wrapper">
           <a-tag>{{ text == -1 ? '-' : levelNumber2String(record.name, `${text}`) }}</a-tag>
-          <edit-outlined v-if="!record.finish" class="editable-cell-icon" @click="edit(record._id)" />
+          <edit-outlined
+            v-if="!(record['grade1Done'] && record['grade2Done'] && record['grade3Done'])"
+            class="editable-cell-icon"
+            @click="edit(record._id)"
+          />
         </div>
       </div>
     </template>

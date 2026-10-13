@@ -1,7 +1,7 @@
 <script setup>
 import { ref, toRaw, h } from 'vue';
 import { Tag } from 'ant-design-vue'
-import { getProjects, getRecords, getSclasses, exportRecord } from '@/api';
+import { getRecords, getSclasses, exportRecord } from '@/api';
 import { levelNumber2String } from '@/utils/common';
 import AddRecoreModal from './AddRecoreModal.vue';
 import { GROUP_LEVEL_MAPPING, PROJECT_ROUND, PROJECT_ROUND_MAPPING, GRADE_MAPPDING, GENDER_MAPPING } from '@/utils/constant'
@@ -21,16 +21,6 @@ const openAddRecoreModal = ref(false);
 const showModal = () => {
   openAddRecoreModal.value = true;
 };
-
-const projects = ref([]);
-getProjects(0).then((res) => {
-  projects.value = res.data.map((item) => ({
-    id: item._id,
-    name: item.name,
-    group: item.group,
-    category: item.category,
-  }));
-});
 
 const classInfos = ref([]);
 getSclasses().then((res) => {
@@ -155,7 +145,6 @@ const onSearch = (data) => {
       :show="openAddRecoreModal"
       @modal-close="openAddRecoreModal = false"
       @record-add-success="getPageRecords"
-      :projects="projects"
       :classes="classInfos"
       :rounds="PROJECT_ROUND"
     >
@@ -164,6 +153,7 @@ const onSearch = (data) => {
       :dataSource="records"
       :columns="columns"
       :pagination="pagination"
+      :locale="{ emptyText: '暂无数据' }"
       @change="onPaginationChange"
       bordered
     >

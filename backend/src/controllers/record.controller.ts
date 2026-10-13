@@ -116,10 +116,6 @@ export class RecordController {
     if (query?.top) {
       q['ranking'] = { $lte: parseInt(query.top) };
     }
-    if (query?.finish) {
-      q['round'] = 1;
-      q['round'] = query.finish == 0 ? 1 : { $in: [2, 3] };
-    }
     const records = await this.recordService.getExportData(q);
     records.forEach((record: any) => {
       worksheet.addRow({

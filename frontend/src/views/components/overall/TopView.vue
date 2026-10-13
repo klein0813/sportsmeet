@@ -132,7 +132,13 @@ function formatRecord(text) {
 </script>
 
 <template>
-  <a-table :columns="columns" :data-source="data" :pagination="false" bordered>
+  <a-table
+    :columns="columns"
+    :data-source="data"
+    :pagination="false"
+    :locale="{ emptyText: '暂无数据' }"
+    bordered
+  >
   </a-table>
 </template>
 

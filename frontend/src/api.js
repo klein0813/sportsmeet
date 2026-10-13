@@ -7,9 +7,9 @@ const instance = axios.create({
   headers: {}
 })
 
-export async function getProjects(finish='') {
+export async function getProjects(status='', grade='') {
   try {
-    return instance.get(`/project?finish=${finish}`);
+    return instance.get(`/project?status=${status}&grade=${grade}`);
   } catch (error) {
     console.error(error);
   }

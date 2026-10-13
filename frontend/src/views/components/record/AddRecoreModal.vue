@@ -12,7 +12,7 @@ import {
   EVENT_RECORE_ADD_SUCCESS,
 } from '@/utils/constant';
 
-const props = defineProps(['projects', 'show', 'rounds', 'classes']);
+const props = defineProps(['show', 'rounds', 'classes']);
 const recordFormRef = ref(null)
 const records = ref([]);
 const flag = '2026';
@@ -24,6 +24,7 @@ const handleOk = () => {
   const datas = toRaw(records.value);
   const data = {
     flag,
+    grade: datas[0].grade,
     projectId: datas[0].projectId,
     round: datas[0].round,
     records: datas.map((item) => {
@@ -39,7 +40,7 @@ const handleOk = () => {
       loadingAddBtn.value = false;
       emits(EVENT_RECORE_ADD_SUCCESS);
       message.success('成绩添加成功');
-      emits(EVENT_RECORE_MODAL_CLOSE);
+      closeModal();
     }
   });
 };
@@ -50,6 +51,7 @@ const addRecord = ({ data, athlete, project }) => {
     projectId: project.id,
     projectName: project.name,
     projectGroup: project.group,
+    grade: data.grade,
     round: data.round,
     id: data.id,
     sid: athlete.sid,
@@ -65,7 +67,7 @@ watch(() => props.show, (newVal) => {
 
 const emits = defineEmits([EVENT_RECORE_MODAL_CLOSE, EVENT_RECORE_ADD_SUCCESS]);
 
-const closeModal= () => {
+const closeModal = () => {
   records.value = [];
   emits(EVENT_RECORE_MODAL_CLOSE);
   recordFormRef.value.reset();
@@ -128,13 +130,18 @@ const columns = ref([
   >
     <RecordForm
       ref="recordFormRef"
-      :projects="props.projects"
       :classes="props.classes"
       :rounds="rounds"
       @record-add="addRecord"
     >
     </RecordForm>
-    <a-table :dataSource="records" :pagination="false" :columns="columns" bordered>
+    <a-table
+      :dataSource="records"
+      :pagination="false"
+      :columns="columns"
+      :locale="{ emptyText: '暂无数据' }"
+      bordered
+    >
     </a-table>
   </a-modal>
 </template>

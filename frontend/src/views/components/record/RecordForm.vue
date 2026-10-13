@@ -1,18 +1,19 @@
 <script setup>
 import { reactive, ref, computed, toRaw } from 'vue';
 import { Form } from 'ant-design-vue';
-import { getAthletesByKeyword } from '@/api';
-import { GROUP_LEVEL_MAPPING, GENDER_MAPPING, EVENT_RECORE_ADD } from '@/utils/constant';
+import { getAthletesByKeyword, getProjects } from '@/api';
+import { GENDER_MAPPING, EVENT_RECORE_ADD, GRADE_MAPPDING } from '@/utils/constant';
 const props = defineProps(['projects', 'rounds', 'classes']);
 const emits = defineEmits([EVENT_RECORE_ADD]);
 const addedAthletes = [];
 
 const useForm = Form.useForm;
 const modelRef = reactive({
+  grade: undefined,
   projectId: undefined,
   round: undefined,
   id: undefined,
-  level: undefined
+  level: undefined,
 });
 const curProject = ref({});
 let curAthlete = undefined;
@@ -20,6 +21,12 @@ const athletes = ref([]);
 const scls = ref([]);
 const projectReadonly = ref(false);
 const rulesRef = reactive({
+  grade: [
+    {
+      required: true,
+      message: '请选择年级',
+    },
+  ],
   projectId: [
     {
       required: true,
@@ -60,29 +67,34 @@ const rulesRef = reactive({
 });
 const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
+const projectOptions = ref([]);
+
+const handleGradeChange = (val) => {
+  getProjects(0, val).then((res) => {
+    projectOptions.value = res.data.map((item) => ({
+      value: item._id,
+      label: item.group < 2 ? `${item.name} (${GENDER_MAPPING[item.group]})` : item.name,
+      id: item._id,
+      category: item.category,
+      name: item.name,
+      group: item.group,
+    }));
+  });
+}
+
 const handleProjectChange = (val) => {
-  console.log(toRaw(props.projects).find((item) => item.id === val))
-  curProject.value = toRaw(props.projects).find((item) => item.id === val);
+  curProject.value = toRaw(projectOptions.value).find((item) => item.value === val);
   modelRef.id = undefined;
 };
-
-const projects = computed(() => {
-  return props.projects.map((item) => {
-    const name = GROUP_LEVEL_MAPPING[item.name];
-    return {
-      value: item.id,
-      label: GENDER_MAPPING[item.group] ? `${name} (${item.group === 0 ? '男子' : '女子'})` : name,
-    }
-  })
-})
 
 const athleteOptions = computed(() => {
   const options = curProject.value.category ? toRaw(scls.value) : toRaw(athletes.value);
   return options.filter(item => !addedAthletes.includes(item.value));
 })
 
+const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v, value: k }));
+
 const handleSearch = (val) => {
-  console.log(val);
   if (!val) {
     athletes.value = [];
     return;
@@ -100,7 +112,7 @@ const handleChange = (val) => {
   console.log('handleChange', val);
   if (curProject.value.category) {
     // 团体赛，选择班级
-    curAthlete =  toRaw(scls.value).find((item) => item.value === val);
+    curAthlete = toRaw(scls.value).find((item) => item.value === val);
   } else {
     // 个体赛，选择运动员
     curAthlete = toRaw(athletes.value).find((item) => item.value === val);
@@ -141,8 +153,11 @@ defineExpose({
 </script>
 <template>
   <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }">
+    <a-form-item class="form-item" label="年级" v-bind="validateInfos.grade">
+      <a-select placeholder="选择年级" v-model:value="modelRef.grade" :options="gradeOptions" :disabled="projectReadonly" @change="handleGradeChange"></a-select>
+    </a-form-item>
     <a-form-item class="form-item" label="项目" v-bind="validateInfos.projectId">
-      <a-select placeholder="选择项目" v-model:value="modelRef.projectId" :options="projects" :disabled="projectReadonly" @change="handleProjectChange"></a-select>
+      <a-select placeholder="选择项目" v-model:value="modelRef.projectId" :options="projectOptions" :disabled="!modelRef.grade || projectReadonly" @change="handleProjectChange"></a-select>
     </a-form-item>
     <a-form-item class="form-item" label="轮次" v-bind="validateInfos.round">
       <a-select placeholder="选择轮次" v-model:value="modelRef.round" :disabled="projectReadonly" :options="props.rounds"></a-select>
@@ -157,6 +172,7 @@ defineExpose({
         :filter-option="false"
         :not-found-content="null"
         :options="athleteOptions"
+        :disabled="!modelRef.projectId"
         @search="handleSearch"
         @change="handleChange"
       ></a-select>

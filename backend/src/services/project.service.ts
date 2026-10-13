@@ -43,7 +43,12 @@ export class ProjectService {
 
   async updateRecord(id, record) {
     const res = await this.projectModel.updateOne(
-      { _id: new mongoose.Types.ObjectId(id), finish: false },
+      {
+        _id: new mongoose.Types.ObjectId(id),
+        'gradeStatus.1': false,
+        'gradeStatus.2': false,
+        'gradeStatus.3': false,
+      },
       {
         $set: {
           record: record,

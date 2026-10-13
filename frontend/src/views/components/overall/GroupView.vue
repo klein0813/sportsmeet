@@ -85,7 +85,13 @@ async function getPageGroupRecords(grade) {
 </script>
 
 <template>
-  <a-table :columns="columns" :data-source="data" :pagination="false" bordered>
+  <a-table
+    :columns="columns"
+    :data-source="data"
+    :locale="{ emptyText: '暂无数据' }"
+    :pagination="false"
+    bordered
+  >
   </a-table>
 </template>
 

@@ -207,10 +207,9 @@ export class RecordService {
     // 1.标注项目比赛完成
     // 2.若破纪录了，更新记录
     if (datas.round >= 2) {
-      const updater = { finish: true };
+      const updater = { $set: { [`grade${datas.grade}Done`]: true } };
       if (records[0]['recordBreaking']) {
-        const newRecord = records[0]['level'];
-        updater['newRecord'] = newRecord;
+        updater.$set['newRecord'] = records[0]['level'];
       }
       await this.projectModel.findByIdAndUpdate(datas.projectId, updater);
     }

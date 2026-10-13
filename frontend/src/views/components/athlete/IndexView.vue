@@ -70,7 +70,12 @@ function hashColor(str) {
 </script>
 
 <template>
-  <a-table :columns="columns" :data-source="data" bordered>
+  <a-table
+    :columns="columns"
+    :data-source="data"
+    :locale="{ emptyText: '暂无数据' }"
+    bordered
+  >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'projects'">
         <a-tag

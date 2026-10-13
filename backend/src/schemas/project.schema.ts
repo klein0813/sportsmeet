@@ -45,11 +45,9 @@ export class Project extends Base {
   })
   category: number; // 0, 单项；1，团体赛, 2, 班级赛
 
-  @Prop({
-    required: true,
-    default: 0,
-  })
-  finish: boolean; // 0, 未完赛，_ _ _ 最高位：高三是否完赛，次位：高二是否完赛，最低为：高一是否完赛
+  @Prop({ type: Boolean, default: false }) grade1Done: boolean;
+  @Prop({ type: Boolean, default: false }) grade2Done: boolean;
+  @Prop({ type: Boolean, default: false }) grade3Done: boolean;
   // @Prop({
   //   required: false,
   //   type: MongooseSchema.Types.Mixed,
