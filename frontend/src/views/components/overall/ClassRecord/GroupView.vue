@@ -10,12 +10,10 @@ const columns = [
   {
     title: '班级',
     dataIndex: 'name',
-    align: 'center',
   },
   {
     title: '100米',
     dataIndex: '100M',
-    align: 'center',
   },
   {
     title: '200米',
@@ -101,5 +99,6 @@ async function getPageGroupRecords(grade) {
 }
 :deep(.ant-table-tbody > tr > td) {
   text-align: center;
+  max-width: 10vw;
 }
 </style>

@@ -1,6 +1,7 @@
 export const EVENT_HOME = 'home';
 export const API_PROJECT = 'project';
 export const API_UPDATE_RECORD = 'update-record';
+export const API_STAT_COMPLETION = 'stat-completion';
 export const API_INIT = 'init';
 export const API_ID = ':id';
 export const API_BATCH = 'batch';

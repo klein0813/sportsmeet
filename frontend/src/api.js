@@ -23,6 +23,13 @@ export async function updateRecord(id, record) {
   }
 }
 
+export async function statCompletion() {
+  try {
+    return instance.get('/project/stat-completion');
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export async function getRecords(query) {
   try {

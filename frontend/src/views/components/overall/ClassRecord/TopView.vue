@@ -108,7 +108,6 @@ const columns = [
 
 watch(() => props.grade, async (newVal) => {
   getPageTopRecords(newVal)
-  // await nextTick()
 });
 
 async function getPageTopRecords(grade) {
@@ -148,5 +147,6 @@ function formatRecord(text) {
 }
 :deep(.ant-table-tbody > tr > td) {
   text-align: center;
+  max-width: 10vw;
 }
 </style>

@@ -7,7 +7,8 @@ import {
   // FileOutlined,
 } from '@ant-design/icons-vue';
 import { ref, computed } from 'vue';
-import OverView from './components/overall/IndexView.vue';
+import OverView from './components/overall/index/IndexView.vue';
+import OVClassRecord from './components/overall/ClassRecord/IndexView.vue';
 import RecordView from './components/record/IndexView.vue';
 import ProjectView from './components/project/IndexView.vue';
 import AthleteView from './components/athlete/IndexView.vue';
@@ -25,9 +26,9 @@ const onMenuClick = (key) => {
 const breadcrumbs = computed(() => {
   switch (viewKey.value) {
     case '1':
-      return ['汇总', '高一'];
+      return ['汇总', '总概'];
     case '2':
-      return ['汇总', '高二'];
+      return ['汇总', '班级成绩表'];
     case '3':
       return  ['汇总', '高三'];
     case '4':
@@ -39,15 +40,14 @@ const breadcrumbs = computed(() => {
     case '6':
       return  ['运动员'];
     default:
-      return ['汇总', '高一'];
+      return ['汇总', '总概'];
   }
 });
-
 </script>
 <template>
   <a-layout style="min-height: 100vh">
     <a-layout-sider v-model:collapsed="collapsed" collapsible>
-      <div class="logo">运动会成绩管理系统</div>
+      <div class="logo">{{ collapsed ? 'SMPM' : '运动会成绩管理系统' }}</div>
       <a-menu theme="dark" v-model:selectedKeys="selectedKeys" mode="inline">
         <a-sub-menu key="overview">
           <template #title>
@@ -56,9 +56,9 @@ const breadcrumbs = computed(() => {
               <span>汇总</span>
             </span>
           </template>
-          <a-menu-item key="1" @click="onMenuClick('1')">高一</a-menu-item>
-          <a-menu-item key="2" @click="onMenuClick('2')">高二</a-menu-item>
-          <a-menu-item key="3" @click="onMenuClick('3')">高三</a-menu-item>
+          <a-menu-item key="1" @click="onMenuClick('1')">总概</a-menu-item>
+          <a-menu-item key="2" @click="onMenuClick('2')">班级成绩表</a-menu-item>
+          <!-- <a-menu-item key="3" @click="onMenuClick('3')">高三</a-menu-item> -->
         </a-sub-menu>
         <a-menu-item key="4" @click="onMenuClick('4')">
           <pie-chart-outlined />
@@ -87,8 +87,11 @@ const breadcrumbs = computed(() => {
           <a-breadcrumb-item v-for="breadcrumb in breadcrumbs" v-bind:key="breadcrumb">{{ breadcrumb }}</a-breadcrumb-item>
         </a-breadcrumb>
         <div class="main-content">
-          <template v-if="['1', '2', '3'].includes(viewKey)">
-            <OverView :grade="viewKey"></OverView>
+          <template v-if="viewKey == '1'">
+            <OverView></OverView>
+          </template>
+          <template v-else-if="['2', '3'].includes(viewKey)">
+            <OVClassRecord></OVClassRecord>
           </template>
           <template v-else-if="viewKey == '4'">
             <RecordView></RecordView>

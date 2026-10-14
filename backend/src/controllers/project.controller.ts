@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
 import {
   API_PROJECT,
   API_COUNT,
   API_FIND,
-  API_ID,
   API_BATCH,
   API_UPDATE_RECORD,
+  API_STAT_COMPLETION,
 } from 'src/utils/constants';
 
 @Controller(API_PROJECT)
@@ -33,10 +33,10 @@ export class ProjectController {
     return this.projectService.findByName(query.name);
   }
 
-  @Get(API_ID)
-  findById(@Param() params: any) {
-    return this.projectService.findById(params.id);
-  }
+  // @Get(API_ID)
+  // findById(@Param() params: any) {
+  //   return this.projectService.findById(params.id);
+  // }
 
   @Post()
   create(@Body() body: any) {
@@ -60,5 +60,10 @@ export class ProjectController {
       return this.projectService.updateRecord(id, record);
     }
     return false;
+  }
+
+  @Get(API_STAT_COMPLETION)
+  statCompletion() {
+    return this.projectService.statCompletion();
   }
 }
