@@ -38,8 +38,8 @@ const chartOptions = ref({
     type: 'bar',
     markPoint: {
       data: [
-        { type: 'max', name: 'Max' },
-        { type: 'min', name: 'Min' }
+        // { type: 'max', name: 'Max' },
+        { type: 'min', name: '最低完成度' }
       ]
     },
   }]

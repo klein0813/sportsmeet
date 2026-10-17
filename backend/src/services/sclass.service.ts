@@ -83,21 +83,21 @@ export class SclassService {
             { $match: { grade: 1 } },
             { $sort: sortCond }, // 排序规则（如果 ranking 是名次 1,2,3 则改为 1）
             { $limit: 3 },
-            { $project: { _id: 1, name: 1, score: 1 } }, // 👈 加上 score
+            { $project: { name: 1, score: 1 } },
           ],
           // 二年级前三名
           grade2: [
             { $match: { grade: 2 } },
             { $sort: sortCond },
             { $limit: 3 },
-            { $project: { _id: 1, name: 1, score: 1 } }, // 👈 加上 score
+            { $project: { name: 1, score: 1 } },
           ],
           // 三年级前三名
           grade3: [
             { $match: { grade: 3 } },
             { $sort: sortCond },
             { $limit: 3 },
-            { $project: { _id: 1, name: 1, score: 1 } }, // 👈 加上 score
+            { $project: { name: 1, score: 1 } },
           ],
         },
       },
@@ -108,6 +108,16 @@ export class SclassService {
       grade2: raw?.grade2 ?? [],
       grade3: raw?.grade3 ?? [],
     };
+  }
+
+  async getRankingData() {
+    const result = await this.sclassModel.aggregate([
+      // 1. 按年级升序(1)、积分降序(-1) 排序
+      { $sort: { score: -1 } },
+      // 2. 筛选返回的字段
+      { $project: { _id: 0, name: 1, score: 1, grade: 1, rankingCounts: 1 } },
+    ]);
+    return result;
   }
 
   count() {
@@ -128,6 +138,27 @@ export class SclassService {
 
   batchInsert(datas) {
     return this.sclassModel.insertMany(datas);
+  }
+
+  sort(datas) {
+    let lastScore = -99;
+    let lastRanking = 0;
+    let lastRankingCounts = {};
+    datas.forEach((data, index) => {
+      // 如遇两队积分相等，以获第一名多者名次列前，以此类推, 排名相同，下一名次跳过
+      if (
+        lastScore == data.score &&
+        this.judgeRankingEqual(lastRankingCounts, data.rankingCounts)
+      ) {
+        data['ranking'] = lastRanking;
+      } else {
+        data['ranking'] = index + 1;
+        lastRanking = data['ranking'];
+        lastScore = data.score;
+        lastRankingCounts = data.rankingCounts;
+      }
+    });
+    return datas;
   }
 
   private judgeRankingEqual(lastRankingCounts, rankingCounts) {

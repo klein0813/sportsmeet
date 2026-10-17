@@ -51,6 +51,7 @@ watch(() => props.data, ({ recordCount, newRecordCount, flashCount }) => {
 <template>
   <ECharts
     ref="chartRef"
+    export-all-btn-text="导出记录刷新成绩"
     :options="chartOptions"
     :show-export-all="true"
     @export-all="exportAll"

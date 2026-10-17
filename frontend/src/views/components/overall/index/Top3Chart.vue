@@ -1,9 +1,11 @@
 <script setup>
 import ECharts from '@/components/ECharts.vue';
 import { ref, watch } from 'vue';
+import { createTop3Excel }  from './exportTop3.js';
 const props = defineProps(['data']);
 
-const grades = ['高一', '高二', '高三']
+// const grades = ['高一', '高二', '高三']
+const grades = [{ label: '高一', value: 'grade1' }, { label: '高二', value: 'grade2' }, { label: '高三', value: 'grade3' }]
 const rankNames = ['第1名', '第2名', '第3名']
 const colors = ['#1677ff', '#52c41a', '#faad14']
 
@@ -33,7 +35,8 @@ function initChart(initData) {
     barGap: '10%',
     barCategoryGap: '30%',
     itemStyle: { color: colors[rankIndex], borderRadius: [4, 4, 0, 0] },
-    data: grades.map((grade, index) => initData[`grade${index+1}`][rankIndex]?.score || 0),
+    // data: grades.map((grade, index) => initData[`grade${index+1}`][rankIndex]?.score || 0),
+    data: grades.map((grade) => initData[grade.value][rankIndex]?.score || 0),
     label: {
       show: true,
       position: 'top',
@@ -50,10 +53,12 @@ function initChart(initData) {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
       formatter: (params) => {
-        const grade = `grade${params[0].axisIndex+1}`
-        let html = `<strong>${grade}</strong><br/>`
+        const { axisValue } = params[0]
+        const currentGrade = grades.find(g => g.value === axisValue);
+        const displayLabel = currentGrade ? currentGrade.label : axisValue;
+        let html = `<strong>${displayLabel}</strong><br/>`
         params.forEach(p => {
-          const item = initData[grade][p.seriesIndex]
+          const item = initData[axisValue][p.seriesIndex]
           if (item) {
             html += `${item.name}：${item.score} 分<br/>`
           }
@@ -61,12 +66,24 @@ function initChart(initData) {
         return html
       },
     },
-    legend: { data: rankNames, top: '10%', right: 0 },
+    legend: { data: rankNames, top: '5%', left: '10%' },
     title: {
       text: '年级积分前三名',
     },
     grid: { top: '15%', left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'category', data: grades },
+    xAxis: {
+      type: 'category',
+      // 把原来的对象数组只提取 value 传给 data
+      data: grades.map(item => item.value), 
+      axisLabel: {
+        // 当 ECharts 渲染刻度时，通过 formatter 把 value 翻译回 label
+        formatter: function (value) {
+          // 在原始数组中找匹配的项
+          const target = grades.find(item => item.value === value);
+          return target ? target.label : value;
+        }
+      }
+    },
     yAxis: { type: 'value', name: '积分' },
     series,
   };
@@ -74,40 +91,11 @@ function initChart(initData) {
 
 // 导出当前图表
 function exportChart() {
-  if (!chartRef.value.chart) return
-  const dataURL = chartRef.value.chart.getDataURL({
-    type: 'png',
-    pixelRatio: 2,
-    backgroundColor: '#fff',
-  })
-  const link = document.createElement('a')
-  link.href = dataURL
-  link.download = `年级前三名积分_${Date.now()}.png`
-  link.click()
+  createTop3Excel(props.data).catch(console.error);
 }
 
 // 导出全部数据
 function exportAll() {
-  const rows = []
-  grades.forEach(grade => {
-    data[grade].forEach((item, index) => {
-      rows.push({
-        年级: grade,
-        名次: `第${index + 1}名`,
-        班级: item.name,
-        积分: item.score,
-      })
-    })
-  })
-
-  const worksheet = XLSX.utils.json_to_sheet(rows, {
-    header: ['年级', '名次', '班级', '积分'],
-  })
-  worksheet['!cols'] = [{ wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 }]
-
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, '前三名积分')
-  XLSX.writeFile(workbook, `年级前三名积分_${Date.now()}.xlsx`)
 }
 
 watch(() => props.data, (newVal) => {
@@ -122,6 +110,8 @@ watch(() => props.data, (newVal) => {
     :options="chartOptions"
     :show-export-chart="true"
     :show-export-all="true"
+    export-chart-btn-text="导出前三名"
+    export-all-btn-text="导出整体排名"
     @export-chart="exportChart"
     @export-all="exportAll"
   >

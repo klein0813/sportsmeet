@@ -17,6 +17,7 @@ export const API_SCLASS = 'sclass';
 export const API_GRADE_TOP_THREE = 'grade-top3';
 export const API_EXPORT_PROJECT_RECORD_DATA = 'exproda';
 export const API_EXPORT_FLASH_RECORD_DATA = 'exflada';
+export const API_EXPORT_RANKING_DATA = 'exrankda';
 
 export const FLAG = '2026';
 export const SHOW_TOP = 6;
@@ -168,7 +169,7 @@ export const LEVEL_TYPE_MAPPING = {
   ropeJump: 3,
   '4X100M': 0,
   '30×50MRelay': 0,
-}
+};
 export const SCLASS = {
   1: [
     '101',

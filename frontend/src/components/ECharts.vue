@@ -13,9 +13,19 @@ export default {
       type: Boolean,
       required: false
     },
+    exportChartBtnText: {
+      type: String,
+      required: false,
+      default: '导出图表',
+    },
     showExportAll: {
       type: Boolean,
       required: false
+    },
+    exportAllBtnText: {
+      type: String,
+      required: false,
+      default: '导出全部',
     },
   },
   emits: ['export-chart', 'export-all'],
@@ -56,11 +66,11 @@ export default {
     <div class="chart-actions">
       <a-button v-show="showExportChart" size="small" @click="exportChart">
         <template #icon><DownloadOutlined /></template>
-        导出图表
+        {{ exportChartBtnText }}
       </a-button>
       <a-button v-show="showExportAll" size="small" type="primary" @click="exportAll">
         <template #icon><FileExcelOutlined /></template>
-        导出全部
+        {{ exportAllBtnText }}
       </a-button>
     </div>
 
