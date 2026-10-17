@@ -1,18 +1,19 @@
 <script setup>
 import ECharts from '@/components/ECharts.vue';
-import { ref } from 'vue';
-import { statCompletion } from '@/api';
+import { ref, watch } from 'vue';
+
+const props = defineProps(['data']);
 
 const chartRef = ref(null)
 const dataset = {
-    source: [
-      ['product', '总数', '完赛数'],
-      ['整体', 0, 0],
-      ['高一', 0, 0],
-      ['高二', 0, 0],
-      ['高三', 0, 0],
-    ]
-  };
+  source: [
+    ['product', '总数', '完赛数'],
+    ['整体', 0, 0],
+    ['高一', 0, 0],
+    ['高二', 0, 0],
+    ['高三', 0, 0],
+  ]
+};
 // const statCompletionData = ref({});
 const chartOptions = ref({
   title: {
@@ -44,7 +45,7 @@ const chartOptions = ref({
   }]
 });
 
-statCompletion().then(({ data: { overall, byGrade } }) => {
+watch(() => props.data, ({ overall, byGrade }) => {
   const { totalDone, projectCount } = overall[0];
   const { g1Done, g2Done, g3Done } = byGrade[0];
   const gradeTotal = projectCount / 3;
@@ -58,7 +59,7 @@ statCompletion().then(({ data: { overall, byGrade } }) => {
     ],
   }
   chartRef.value.chart.setOption(chartOptions, true)
-})
+});
 </script>
 
 <template>

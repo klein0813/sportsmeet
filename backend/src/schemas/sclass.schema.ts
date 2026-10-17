@@ -31,10 +31,24 @@ export class Sclass extends Base {
   score: number; // 总分
 
   @Prop({
-    required: false,
-    min: 1,
+    type: {
+      no1: { type: Number, default: 0 },
+      no2: { type: Number, default: 0 },
+      no3: { type: Number, default: 0 },
+      no4: { type: Number, default: 0 },
+      no5: { type: Number, default: 0 },
+      no6: { type: Number, default: 0 },
+    },
+    default: () => ({ no1: 0, no2: 0, no3: 0, no4: 0, no5: 0, no6: 0 }),
   })
-  ranking: number; // 排名
+  rankingCounts: {
+    no1: number;
+    no2: number;
+    no3: number;
+    no4: number;
+    no5: number;
+    no6: number;
+  };
 
   @Prop({
     required: true,

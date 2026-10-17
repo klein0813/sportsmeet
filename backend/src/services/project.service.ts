@@ -113,9 +113,20 @@ export class ProjectService {
               },
             },
           ],
+          recordCount: [
+            { $match: { record: { $gt: 0 } } },
+            { $count: 'count' },
+          ],
+          // 统计 newRecord > 0 的数量
+          newRecordCount: [
+            { $match: { newRecord: { $gt: 0 } } },
+            { $count: 'count' },
+          ],
         },
       },
     ]);
     return data[0];
   }
+
+  // statRecordFlashCount
 }

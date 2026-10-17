@@ -173,6 +173,7 @@ export class RecordService {
                 score: res['score'],
                 originText: sclass.projects[project.name],
                 originScore: sclass.score,
+                ranking: res['ranking'],
               };
             }
             if (res['recordBreaking']) {
@@ -188,7 +189,8 @@ export class RecordService {
     // 更新班级积分
     Object.keys(updateSclass).forEach(async (className) => {
       const updateSclassData = updateSclass[className];
-      const { text, score, originText, originScore } = updateSclassData;
+      const { text, score, originText, originScore, ranking } =
+        updateSclassData;
       // // 给分数添加组别（男/女）
       // if (project.group < 2) {
       //   text = `${text}(${GENDER_MAPPING[project.group]})`;
@@ -200,6 +202,7 @@ export class RecordService {
             [`projects.${project.name}`]: `${originText ?? ''}+${text}`,
             score: originScore + score,
           },
+          $inc: { [`rankingCounts.no${ranking}`]: 1 },
         },
       );
     });
@@ -224,6 +227,10 @@ export class RecordService {
       ganderTop,
       classTop,
     };
+  }
+
+  getFlashCount() {
+    return this.recordModel.countDocuments({ recordBreaking: true });
   }
 
   private getGanderProjectTop(top: number, grade: number) {

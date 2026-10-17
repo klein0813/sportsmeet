@@ -1,6 +1,11 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { SclassService } from '../services/sclass.service';
-import { API_SCLASS, API_COUNT, API_FIND } from 'src/utils/constants';
+import {
+  API_SCLASS,
+  API_COUNT,
+  API_FIND,
+  API_GRADE_TOP_THREE,
+} from 'src/utils/constants';
 
 @Controller(API_SCLASS)
 export class SclassController {
@@ -24,5 +29,10 @@ export class SclassController {
   @Get(API_FIND)
   findByName(@Query() query: any) {
     return this.sclassService.findByName(query.name);
+  }
+
+  @Get(API_GRADE_TOP_THREE)
+  getTopThreeByGrade() {
+    return this.sclassService.getTopThreeByGrade();
   }
 }

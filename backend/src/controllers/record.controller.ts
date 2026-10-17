@@ -22,6 +22,7 @@ import {
   PROJECTS,
   STR_GROUPS,
   STR_ROUNDS,
+  API_FLASH_COUNT,
 } from 'src/utils/constants';
 import * as ExcelJS from 'exceljs';
 import { Readable } from 'stream';
@@ -82,6 +83,11 @@ export class RecordController {
     const top = Number.parseInt(query.top);
     const grade = Number.parseInt(query.grade);
     return this.recordService.getTop(top, grade);
+  }
+
+  @Get(API_FLASH_COUNT)
+  getFlashCount() {
+    return this.recordService.getFlashCount();
   }
 
   @Get(API_EXPORT_PROJECT_RECORD_DATA)

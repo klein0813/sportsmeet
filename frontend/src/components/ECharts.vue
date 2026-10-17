@@ -1,5 +1,6 @@
 <script>
 import * as echarts from 'echarts';
+import { DownloadOutlined, FileExcelOutlined } from '@ant-design/icons-vue'
 
 export default {
   name: 'ECharts',
@@ -7,11 +8,37 @@ export default {
     options: {
       type: Object,
       required: true
-    }
+    },
+    showExportChart: {
+      type: Boolean,
+      required: false
+    },
+    showExportAll: {
+      type: Boolean,
+      required: false
+    },
+  },
+  emits: ['export-chart', 'export-all'],
+    // 2. 注册组件
+  components: {
+    DownloadOutlined,
+    FileExcelOutlined,
+  },
+  methods: {
+    exportChart() {
+      this.$emit('export-chart');
+    },
+    exportAll() {
+      this.$emit('export-all');
+    },
   },
   mounted() {
     this.chart = echarts.init(this.$refs.chart);
     this.chart.setOption(this.options);
+    window.addEventListener('resize', () => this.chart?.resize())
+  },
+  beforeUnmount() {
+    this.chart?.dispose()
   },
   watch: {
     options: {
@@ -25,5 +52,38 @@ export default {
 </script>
 
 <template>
-  <div ref="chart" style="width: 100%; height: 370px;"></div>
+  <div class="chart-wrapper">
+    <div class="chart-actions">
+      <a-button v-show="showExportChart" size="small" @click="exportChart">
+        <template #icon><DownloadOutlined /></template>
+        导出图表
+      </a-button>
+      <a-button v-show="showExportAll" size="small" type="primary" @click="exportAll">
+        <template #icon><FileExcelOutlined /></template>
+        导出全部
+      </a-button>
+    </div>
+
+    <div ref="chart" class="chart"></div>
+  </div>
 </template>
+<style scoped>
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 370px;
+  /* 450 */
+}
+.chart {
+  width: 100%;
+  height: 100%;
+}
+.chart-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+}
+</style>

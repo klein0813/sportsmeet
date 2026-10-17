@@ -31,6 +31,14 @@ export async function statCompletion() {
   }
 }
 
+export async function getFlashCount() {
+  try {
+    return instance.get('/record/get-flash-count');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function getRecords(query) {
   try {
     return instance.get('/record', {
@@ -54,6 +62,14 @@ export async function getTopRecords(grade, top) {
 export async function getGroupRecords(grade) {
   try {
     return instance.get(`/sclass?grade=${grade}`);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getGradeTop3() {
+  try {
+    return instance.get('/sclass/grade-top3');
   } catch (error) {
     console.error(error);
   }

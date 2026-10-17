@@ -1,85 +1,61 @@
-<template>
-  <div class="chart-wrapper">
-    <div class="chart-actions">
-      <a-button size="small" @click="exportChart">
-        <template #icon><DownloadOutlined /></template>
-        导出图表
-      </a-button>
-      <a-button size="small" type="primary" @click="exportAll">
-        <template #icon><FileExcelOutlined /></template>
-        导出全部
-      </a-button>
-    </div>
-
-    <div ref="chartRef" class="chart"></div>
-  </div>
-</template>
-
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import * as echarts from 'echarts'
-import * as XLSX from 'xlsx'
-import { DownloadOutlined, FileExcelOutlined } from '@ant-design/icons-vue'
-
-const chartRef = ref(null)
-let chart = null
-
-const data = {
-  高一: [
-    { className: '一班', score: 95 },
-    { className: '二班', score: 90 },
-    { className: '三班', score: 85 },
-  ],
-  高二: [
-    { className: '三班', score: 88 },
-    { className: '一班', score: 82 },
-    { className: '二班', score: 80 },
-  ],
-  高三: [
-    { className: '二班', score: 92 },
-    { className: '三班', score: 87 },
-    { className: '一班', score: 83 },
-  ],
-}
+import ECharts from '@/components/ECharts.vue';
+import { ref, watch } from 'vue';
+const props = defineProps(['data']);
 
 const grades = ['高一', '高二', '高三']
 const rankNames = ['第1名', '第2名', '第3名']
 const colors = ['#1677ff', '#52c41a', '#faad14']
 
-function initChart() {
-  chart = echarts.init(chartRef.value)
+const chartRef = ref(null)
+const chartOptions = ref(initChart({
+  'grade1': [
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+  ],
+  'grade2': [
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+  ],
+  'grade3': [
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+  ],
+}));
 
+function initChart(initData) {
   const series = rankNames.map((rankName, rankIndex) => ({
     name: rankName,
     type: 'bar',
     barGap: '10%',
     barCategoryGap: '30%',
     itemStyle: { color: colors[rankIndex], borderRadius: [4, 4, 0, 0] },
-    data: grades.map(grade => data[grade][rankIndex]?.score || 0),
+    data: grades.map((grade, index) => initData[`grade${index+1}`][rankIndex]?.score || 0),
     label: {
       show: true,
       position: 'top',
       formatter: (params) => {
-        const grade = grades[params.dataIndex]
-        const item = data[grade][rankIndex]
-        return item ? `${item.className}（${item.score}）` : ''
+        const item = initData[`grade${params.dataIndex+1}`][rankIndex]
+        return item ? `${item.name}（${item.score}）` : ''
       },
       color: '#333',
       fontSize: 12,
     },
   }))
-
-  chart.setOption({
+  return {
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
       formatter: (params) => {
-        const grade = params[0].axisValue
+        const grade = `grade${params[0].axisIndex+1}`
         let html = `<strong>${grade}</strong><br/>`
         params.forEach(p => {
-          const item = data[grade][p.seriesIndex]
+          const item = initData[grade][p.seriesIndex]
           if (item) {
-            html += `${item.className}：${item.score} 分<br/>`
+            html += `${item.name}：${item.score} 分<br/>`
           }
         })
         return html
@@ -93,13 +69,13 @@ function initChart() {
     xAxis: { type: 'category', data: grades },
     yAxis: { type: 'value', name: '积分' },
     series,
-  })
+  };
 }
 
 // 导出当前图表
 function exportChart() {
-  if (!chart) return
-  const dataURL = chart.getDataURL({
+  if (!chartRef.value.chart) return
+  const dataURL = chartRef.value.chart.getDataURL({
     type: 'png',
     pixelRatio: 2,
     backgroundColor: '#fff',
@@ -118,7 +94,7 @@ function exportAll() {
       rows.push({
         年级: grade,
         名次: `第${index + 1}名`,
-        班级: item.className,
+        班级: item.name,
         积分: item.score,
       })
     })
@@ -134,33 +110,23 @@ function exportAll() {
   XLSX.writeFile(workbook, `年级前三名积分_${Date.now()}.xlsx`)
 }
 
-onMounted(() => {
-  initChart()
-  window.addEventListener('resize', () => chart?.resize())
-})
-
-onBeforeUnmount(() => {
-  chart?.dispose()
-})
+watch(() => props.data, (newVal) => {
+  chartOptions.value = initChart(newVal);
+  chartRef.value.chart.setOption(chartOptions, true)
+}, { deep: true });
 </script>
 
-<style scoped>
-.chart-wrapper {
-  position: relative;
-  width: 100%;
-  height: 370px;
-  /* 450 */
-}
-.chart {
-  width: 100%;
-  height: 100%;
-}
-.chart-actions {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 10;
-  display: flex;
-  gap: 8px;
-}
+<template>
+  <ECharts
+    ref="chartRef"
+    :options="chartOptions"
+    :show-export-chart="true"
+    :show-export-all="true"
+    @export-chart="exportChart"
+    @export-all="exportAll"
+  >
+  </ECharts>
+</template>
+
+<style lang="less" scoped>
 </style>
