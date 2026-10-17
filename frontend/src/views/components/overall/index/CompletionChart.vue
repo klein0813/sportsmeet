@@ -46,8 +46,11 @@ const chartOptions = ref({
 });
 
 watch(() => props.data, ({ overall, byGrade }) => {
-  const { totalDone, projectCount } = overall[0];
-  const { g1Done, g2Done, g3Done } = byGrade[0];
+  const totalDone = overall[0]?.totalDone || 0;
+  const projectCount = overall[0]?.projectCount || 0;
+  const g1Done = byGrade[0]?.g1Done || 0;
+  const g2Done = byGrade[0]?.g2Done || 0;
+  const g3Done = byGrade[0]?.g3Done || 0;
   const gradeTotal = projectCount / 3;
   chartOptions.value.dataset = {
     source: [

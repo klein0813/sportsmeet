@@ -39,8 +39,8 @@ function exportAll() {
 watch(() => props.data, ({ recordCount, newRecordCount, flashCount }) => {
   chartOptions.value.dataset = {
     source: [
-      ['记录项目数', recordCount[0].count],
-      ['记录刷新项目数', newRecordCount[0].count],
+      ['记录项目数', recordCount[0]?.count || 0],
+      ['记录刷新项目数', newRecordCount[0]?.count || 0],
       ['记录刷新人次', flashCount],
     ],
   }
