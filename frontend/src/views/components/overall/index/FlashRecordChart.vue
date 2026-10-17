@@ -1,6 +1,7 @@
 <script setup>
 import ECharts from '@/components/ECharts.vue';
 import { ref, watch } from 'vue';
+import { exportFlashRecord } from '@/api';
 
 const props = defineProps(['data']);
 const chartRef = ref(null)
@@ -30,6 +31,11 @@ const chartOptions =ref({
   series: [{ type: 'bar' }]
 });
 
+// 导出全部数据
+function exportAll() {
+  exportFlashRecord();
+}
+
 watch(() => props.data, ({ recordCount, newRecordCount, flashCount }) => {
   chartOptions.value.dataset = {
     source: [
@@ -43,7 +49,13 @@ watch(() => props.data, ({ recordCount, newRecordCount, flashCount }) => {
 </script>
 
 <template>
-  <ECharts ref="chartRef" :options="chartOptions"></ECharts>
+  <ECharts
+    ref="chartRef"
+    :options="chartOptions"
+    :show-export-all="true"
+    @export-all="exportAll"
+  >
+  </ECharts>
 </template>
 
 <style lang="less" scoped>

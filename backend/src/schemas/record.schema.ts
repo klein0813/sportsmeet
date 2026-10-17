@@ -19,6 +19,11 @@ export class Record extends Base {
   @Prop({
     required: true,
   })
+  projectType: string; // 0, 成绩数值越大越好，1，成绩数值越小越好。
+
+  @Prop({
+    required: true,
+  })
   projectGroup: number; // 项目组别
 
   @Prop({

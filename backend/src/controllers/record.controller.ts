@@ -23,7 +23,10 @@ import {
   STR_GROUPS,
   STR_ROUNDS,
   API_FLASH_COUNT,
+  API_EXPORT_FLASH_RECORD_DATA,
+  GROUP_LEVEL_MAPPING,
 } from 'src/utils/constants';
+import CopmsUtil from 'src/utils/comps.util';
 import * as ExcelJS from 'exceljs';
 import { Readable } from 'stream';
 import * as contentDisposition from 'content-disposition';
@@ -139,8 +142,123 @@ export class RecordController {
 
     // 设置列宽
     worksheet.columns.forEach((column) => {
-      column.width = column.width || 10; // 设置默认宽度为10，根据需要调整
+      column.width = 12.5;
     });
+    // 设置行高
+    worksheet.eachRow({ includeEmpty: false }, (row) => {
+      row.height = 24;
+    });
+
+    // 设置表头行（假设是第一行）
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+
+    // 给第 1 行到第 10 行，1 到 4 列的所有单元格加边框
+    for (let i = 1; i <= records.length + 1; i++) {
+      worksheet.getColumn(i).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      };
+      const row = worksheet.getRow(i);
+      for (let j = 1; j <= 7; j++) {
+        row.getCell(j).border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+    }
+
+    // 生成 Buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    // 将 Buffer 转换为 Readable 流
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null); // 表示流结束
+
+    return new StreamableFile(stream);
+  }
+
+  @Get(API_EXPORT_FLASH_RECORD_DATA)
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  @Header(
+    'Content-Disposition',
+    `attachment; filename=${contentDisposition('运动会破纪录数据.xlsx')}`,
+  )
+  async downloadFlashRecordExcel(): Promise<StreamableFile> {
+    const workbook = new ExcelJS.Workbook();
+    // 添加一个工作表
+    const worksheet = workbook.addWorksheet('详细');
+
+    // 添加一些数据
+    worksheet.columns = [
+      // { header: 'ID', key: 'id', width: 10 },
+      // { header: 'Name', key: 'name', width: 30 },
+      { header: '类型', key: 'projectGroup' },
+      { header: '项目', key: 'projectName' },
+      { header: '年级', key: 'athleteGrade' },
+      { header: '班级', key: 'athleteClass' },
+      { header: '号码', key: 'athleteSid' },
+      { header: '姓名', key: 'athleteName' },
+      { header: '成绩', key: 'level' },
+    ];
+    const q = {
+      recordBreaking: true,
+    };
+    const records = await this.recordService.getExportFlashData(q);
+    records.forEach((record: any) => {
+      worksheet.addRow({
+        athleteGrade: GRADE_MAPPING[record.athleteGrade],
+        athleteSid: record.athleteSid,
+        athleteName: record.athleteName,
+        athleteClass: record.athleteClass,
+        level: CopmsUtil.levelNumber2String(
+          record.projectName,
+          `${record.level}`,
+        ),
+        projectGroup: GENDER_MAPPING[record.projectGroup],
+        projectName: GROUP_LEVEL_MAPPING[record.projectName],
+      });
+    });
+
+    // 设置列宽
+    worksheet.columns.forEach((column) => {
+      column.width = 12.5;
+    });
+    // 设置行高
+    worksheet.eachRow({ includeEmpty: false }, (row) => {
+      row.height = 24;
+    });
+
+    // 设置表头行（假设是第一行）
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+
+    // 给第 1 行到第 10 行，1 到 4 列的所有单元格加边框
+    for (let i = 1; i <= records.length + 1; i++) {
+      worksheet.getColumn(i).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      };
+      const row = worksheet.getRow(i);
+      for (let j = 1; j <= 7; j++) {
+        row.getCell(j).border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+    }
 
     // 生成 Buffer
     const buffer = await workbook.xlsx.writeBuffer();

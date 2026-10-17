@@ -16,6 +16,7 @@ export const API_FLASH_COUNT = 'get-flash-count';
 export const API_SCLASS = 'sclass';
 export const API_GRADE_TOP_THREE = 'grade-top3';
 export const API_EXPORT_PROJECT_RECORD_DATA = 'exproda';
+export const API_EXPORT_FLASH_RECORD_DATA = 'exflada';
 
 export const FLAG = '2026';
 export const SHOW_TOP = 6;
@@ -153,6 +154,21 @@ export const PROJECT_NAME_MAPPING = {
   拔河: 'tugOfWar',
   跳绳: 'ropeJump',
 };
+export const LEVEL_TYPE_MAPPING = {
+  // 0，时间；1，距离、高度；2，名次；3，个数
+  '100M': 0,
+  '200M': 0,
+  '400M': 0,
+  '800M': 0,
+  '1500M': 0,
+  highJump: 1,
+  longJump: 1,
+  shotPut: 1,
+  tugOfWar: 2, // 成绩是名次
+  ropeJump: 3,
+  '4X100M': 0,
+  '30×50MRelay': 0,
+}
 export const SCLASS = {
   1: [
     '101',

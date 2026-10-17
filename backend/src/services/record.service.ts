@@ -107,6 +107,7 @@ export class RecordService {
     const data = {
       projectId: project._id,
       projectName: project.name,
+      projectType: project.type,
       projectGroup: project.group,
       category: project.category,
       flag: datas.flag,
@@ -350,5 +351,40 @@ export class RecordService {
         createdAt: -1,
       }) // 1 = 升序，-1 = 降序
       .exec();
+  }
+
+  getExportFlashData(query) {
+    // return this.recordModel
+    //   .find(query)
+    //   .sort({
+    //     projectGroup: 1,
+    //     projectName: 1,
+    //     score: 1,
+    //   }) // 1 = 升序，-1 = 降序
+    //   .exec();
+    return this.recordModel.aggregate([
+      // 1. 动态生成一个用于统一排序的虚拟字段 sortScore
+      {
+        $match: query,
+      },
+      {
+        $addFields: {
+          sortScore: {
+            $cond: {
+              if: { $eq: ['$projectType', 1] }, // 如果是径赛
+              then: { $multiply: ['$score', -1] }, // 取负值（时间 10s 变成 -10）
+              else: '$score', // 田赛保持原值（距离 5m 还是 5m）
+            },
+          },
+        },
+      },
+      {
+        $sort: { sortScore: -1 },
+      },
+      // 3. 隐藏虚拟字段（如果不需要返回给前端）
+      {
+        $project: { sortScore: 0 },
+      },
+    ]);
   }
 }

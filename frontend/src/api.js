@@ -90,6 +90,21 @@ export async function exportRecord() {
   }
 }
 
+export async function exportFlashRecord() {
+  try {
+    // const link = document.createElement('a')
+    // link.href = '/record/exproda'
+    // link.download = '运动会项目数据.xlsx'
+    // document.body.appendChild(link)
+    // link.click()
+    // document.body.removeChild(link)
+    window.open('/record/exflada')
+    // return instance.get('/record/exproda');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function getSclasses() {
   try {
     return instance.get('/sclass');
