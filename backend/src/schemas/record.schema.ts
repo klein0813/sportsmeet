@@ -96,3 +96,4 @@ export class Record extends Base {
 }
 
 export const RecordSchema = SchemaFactory.createForClass(Record);
+RecordSchema.index({ projectId: 1, athleteId: 1, round: 1 });

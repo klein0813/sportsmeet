@@ -62,3 +62,4 @@ export class Sclass extends Base {
 }
 
 export const SclassSchema = SchemaFactory.createForClass(Sclass);
+SclassSchema.index({ name: 1, flag: 1 });

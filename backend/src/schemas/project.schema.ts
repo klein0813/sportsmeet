@@ -31,7 +31,7 @@ export class Project extends Base {
   @Prop({
     required: false,
   })
-  newRecord: number; // 记录
+  newRecord: number; // 新记录
 
   @Prop({
     required: false,
@@ -60,3 +60,4 @@ export class Project extends Base {
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
+ProjectSchema.index({ name: 1, group: 1 });

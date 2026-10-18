@@ -51,3 +51,4 @@ export class Athlete extends Base {
 }
 
 export const AthleteSchema = SchemaFactory.createForClass(Athlete);
+AthleteSchema.index({ sid: 1, flag: 1 });
