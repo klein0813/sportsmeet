@@ -60,4 +60,4 @@ export class Project extends Base {
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
-ProjectSchema.index({ name: 1, group: 1 });
+ProjectSchema.index({ name: 1, group: 1 }, { unique: true });
