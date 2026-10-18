@@ -113,9 +113,13 @@ export async function getSclasses() {
   }
 }
 
-export async function getAthletesByKeyword(keyword, callback) {
+export async function getAthletesByKeyword(query, callback) {
   try {
-    const response = await instance.get(`/athlete/sid?keyword=${keyword}`);
+    const response = await instance.get('/athlete/sid', {
+      params: {
+        ...query
+      },
+    });
     const data = await response.data.map(athlete => ({
       value: athlete._id,
       label: `${athlete.name} (${athlete.sid})`,

@@ -35,8 +35,16 @@ export class AthleteService {
     });
   }
 
-  getBySidKeyword(keyword: string) {
+  getBySidKeyword(
+    keyword: string,
+    grade: number,
+    gender: number,
+    project: string,
+  ) {
     return this.athleteModel.find({
+      grade,
+      gender,
+      projects: project,
       sid: {
         $regex: `^${keyword}`, // ^ 表示以关键词开头
         $options: 'i', // i 表示不区分大小写
