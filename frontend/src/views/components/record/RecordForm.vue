@@ -2,7 +2,7 @@
 import { reactive, ref, computed, toRaw } from 'vue';
 import { Form } from 'ant-design-vue';
 import { getAthletesByKeyword, getProjects } from '@/api';
-import { GENDER_MAPPING, EVENT_RECORE_ADD, GRADE_MAPPDING } from '@/utils/constant';
+import { GENDER_MAPPING, EVENT_RECORE_ADD, GRADE_MAPPDING, GROUP_LEVEL_MAPPING } from '@/utils/constant';
 const props = defineProps(['projects', 'rounds', 'classes']);
 const emits = defineEmits([EVENT_RECORE_ADD]);
 const addedAthletes = [];
@@ -71,14 +71,16 @@ const projectOptions = ref([]);
 
 const handleGradeChange = (val) => {
   getProjects(0, val).then((res) => {
-    projectOptions.value = res.data.map((item) => ({
+    projectOptions.value = res.data.map((item) => {
+    const showName = GROUP_LEVEL_MAPPING[item.name];
+    return {
       value: item._id,
-      label: item.group < 2 ? `${item.name} (${GENDER_MAPPING[item.group]})` : item.name,
+      label: item.group < 2 ? `${showName} (${GENDER_MAPPING[item.group]})` : showName,
       id: item._id,
       category: item.category,
       name: item.name,
       group: item.group,
-    }));
+    }});
   });
 }
 
@@ -104,7 +106,12 @@ const handleSearch = (val) => {
     scls.value = getClassesByKeyword(toRaw(props.classes), val)
   } else {
     // 个体赛，选择运动员
-    getAthletesByKeyword(val, (d) => (athletes.value = d));
+    getAthletesByKeyword({
+      keyword: val,
+      grade: toRaw(modelRef).grade,
+      group: curProject.value.group,
+      project: curProject.value.name,
+    }, (d) => (athletes.value = d));
   }
 };
 
@@ -116,7 +123,12 @@ const handleChange = (val) => {
   } else {
     // 个体赛，选择运动员
     curAthlete = toRaw(athletes.value).find((item) => item.value === val);
-    getAthletesByKeyword(val, (d) => (athletes.value = d));
+    getAthletesByKeyword({
+      keyword: val,
+      grade: toRaw(modelRef).grade,
+      group: curProject.value.group,
+      project: curProject.value.name,
+    }, (d) => (athletes.value = d));
   } 
 };
 
