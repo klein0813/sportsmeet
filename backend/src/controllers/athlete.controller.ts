@@ -8,6 +8,9 @@ import {
   API_ID,
   API_BATCH,
   API_SID,
+  GRADE_KV_MAPPING,
+  PROJECT_NAME_MAPPING,
+  GENDER_KV_MAPPING,
 } from 'src/utils/constants';
 
 @Controller(API_ATHLETE)
@@ -54,7 +57,7 @@ export class AthleteController {
   @Get('init')
   async init() {
     const workbook = new Excel.Workbook();
-    await workbook.xlsx.readFile('src/utils/学生名单.xlsx');
+    await workbook.xlsx.readFile('src/utils/报名表.xlsx');
     const worksheet = workbook.getWorksheet(1);
 
     const athletes = {};
@@ -68,22 +71,23 @@ export class AthleteController {
 
       // 获取单个单元格的值
       const sid = row.getCell(2).value as string; // 号码
-      const project = row.getCell(6).value; // 项目
-      if (athletes[sid]) {
-        athletes[sid]['projects'].push(project);
-        return;
+      const project1 = PROJECT_NAME_MAPPING[row.getCell(6).value as string]; // 项目
+      const project2 = row.getCell(7).value as string; // 项目
+      const grade = GRADE_KV_MAPPING[row.getCell(1).value as string]; // 年级
+      const className = row.getCell(3).value; // 班级
+      const gender = GENDER_KV_MAPPING[row.getCell(4).value as string]; // 性别
+      const name = row.getCell(5).value; // 姓名
+      const projects = [project1];
+      if (project2 && project2 != project1) {
+        projects.push(PROJECT_NAME_MAPPING[project2]);
       }
-      const grade = row.getCell(1).value; // 年级
-      const name = row.getCell(3).value; // 姓名
-      const className = row.getCell(4).value; // 班级
-      const gender = row.getCell(5).value; // 性别
       athletes[sid] = {
         sid,
         grade,
         name,
         class: className,
         gender,
-        projects: [project],
+        projects,
         flag: '2026',
       };
     });

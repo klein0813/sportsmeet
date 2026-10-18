@@ -35,9 +35,18 @@ export const GRADE_MAPPING = {
   2: '高二',
   3: '高三',
 };
+export const GRADE_KV_MAPPING = {
+  高一: 1,
+  高二: 2,
+  高三: 3,
+};
 export const GENDER_MAPPING = {
   0: '男',
   1: '女',
+};
+export const GENDER_KV_MAPPING = {
+  男: 0,
+  女: 1,
 };
 export const RANKING_MAPPING = {
   1: '第一名',

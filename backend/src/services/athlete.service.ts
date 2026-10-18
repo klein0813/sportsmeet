@@ -10,7 +10,9 @@ export class AthleteService {
   ) {}
 
   get(query) {
-    return this.athleteModel.find({ ...query, isDeleted: false });
+    return this.athleteModel
+      .find({ ...query, isDeleted: false })
+      .sort({ sid: 1 });
   }
 
   count() {
