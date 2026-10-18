@@ -18,6 +18,8 @@
     "competition-score": "file:",
     "echarts": "^6.1.0",
     "exceljs": "^4.4.0",
+    "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
     "less": "^4.2.0",
     "vue": "^3.3.4",
     "vue-axios": "^3.5.2",

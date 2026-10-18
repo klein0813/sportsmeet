@@ -1,9 +1,9 @@
 <script setup>
 import {
   PieChartOutlined,
-  DesktopOutlined,
+  ProfileOutlined,
   UserOutlined,
-  // TeamOutlined,
+  BarChartOutlined,
   // FileOutlined,
 } from '@ant-design/icons-vue';
 import { ref, computed } from 'vue';
@@ -52,7 +52,7 @@ const breadcrumbs = computed(() => {
         <a-sub-menu key="overview">
           <template #title>
             <span>
-              <pie-chart-outlined />
+              <bar-chart-outlined />
               <span>汇总</span>
             </span>
           </template>
@@ -65,7 +65,7 @@ const breadcrumbs = computed(() => {
           <span>成绩</span>
         </a-menu-item>
         <a-menu-item key="5" @click="onMenuClick('5')">
-          <desktop-outlined />
+          <profile-outlined />
           <span>项目</span>
         </a-menu-item>
         <!-- <a-menu-item key="6" @click="onMenuClick('6')">

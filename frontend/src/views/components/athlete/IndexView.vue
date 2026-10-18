@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { getAthletes } from '@/api';
+import { GROUP_LEVEL_MAPPING } from '@/utils/constant';
 
 const data = ref([]);
 
@@ -83,7 +84,7 @@ function hashColor(str) {
           :key="project"
           :color="hashColor(project)"
         >
-          {{ project }}
+          {{ GROUP_LEVEL_MAPPING[project] }}
         </a-tag>
       </template>
     </template>
