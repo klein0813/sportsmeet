@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, h } from 'vue';
 import { getTopRecords } from '@/api';
 import { RANKING_MAPPING, SHOW_TOP } from '@/utils/constant'
 import { levelNumber2String } from '@/utils/common'
@@ -42,51 +42,73 @@ const columns = [
   {
     title: '100米',
     dataIndex: '100M',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '200米',
     dataIndex: '200M',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '400米',
     dataIndex: '400M',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '800米',
     dataIndex: '800M',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '1500米',
     dataIndex: '1500M',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '跳高',
     dataIndex: 'highJump',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '跳远',
     dataIndex: 'longJump',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '铅球',
     dataIndex: 'shotPut',
-    customRender: ({ text }) => formatRecord(text),
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
+    },
   },
   {
     title: '4*100米',
     dataIndex: '4X100M',
-    customRender: ({ text }) => {
-      if (!text) return '';
-      const arr = text.split(' ');
-      const suffix = arr.length === 4 ? arr[3] : '';
-      return `${levelNumber2String('4X100M', text.split(' ')[0])} ${suffix}`;
+    customRender: ({ text, column: { dataIndex } }) => {
+      // 如果你的 formatRecord 返回的是 \n
+      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
     },
   },
   {
@@ -122,11 +144,16 @@ async function getPageTopRecords(grade) {
   data.value = datas;
 }
 
-function formatRecord(text) {
+function formatRecord(dataIndex, text) {
   if (!text) return '';
-  const arr = text.split(' ');
-  const suffix = arr.length === 4 ? arr[3] : '';
-  return ([arr[0], arr[1], levelNumber2String('4X100M', arr[2]), suffix]).join(' ');
+  return text.map(item => {
+    const arr = item.split(' ');
+    const suffix = arr.length === 4 ? arr[3] : '';
+    if (dataIndex == '4X100M') {
+      return `${levelNumber2String('4X100M', text.split(' ')[0])} ${suffix}`;
+    }
+    return ([arr[0], arr[1], levelNumber2String(dataIndex, arr[2]), suffix]).join(' ');
+  }).join('\n');
 }
 </script>
 

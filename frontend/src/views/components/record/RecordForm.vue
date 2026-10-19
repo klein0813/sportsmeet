@@ -104,7 +104,7 @@ const handleSearch = (val) => {
   }
   if (curProject.value.category) {
     // 团体赛，选择班级
-    scls.value = getClassesByKeyword(toRaw(props.classes), val)
+    scls.value = getClassesByKeyword(toRaw(props.classes), val, toRaw(modelRef).grade)
   } else {
     // 个体赛，选择运动员
     getAthletesByKeyword({
@@ -133,9 +133,10 @@ const handleChange = (val) => {
   } 
 };
 
-function getClassesByKeyword(arr, keyword) {
+function getClassesByKeyword(arr, keyword, grade) {
+  const gradeReg = new RegExp(`^${grade}`);
   const reg = new RegExp(`^${keyword}`);
-  return arr.filter(item => reg.test(item.name));
+  return arr.filter(item => gradeReg.test(item.name)).filter(item => reg.test(item.name));
 }
 
 const onSubmit = () => {

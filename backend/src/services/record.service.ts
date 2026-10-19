@@ -255,37 +255,38 @@ export class RecordService {
           ranking: { $lte: top },
         },
       },
-      {
-        $set: {
-          fullName: {
-            $concat: [
-              '$athleteClass',
-              ' ',
-              '$athleteName',
-              ' ',
-              '$level',
-              {
-                $cond: [
-                  '$recordBreaking', // 条件：boolean 字段
-                  ' (破)', // true 时的字符串
-                  '', // false 时的字符串
-                ],
-              },
-            ],
-          },
-        },
-      },
+      // 1. 直接按 排名、组别、项目名 分组
       {
         $group: {
           _id: {
             ranking: '$ranking',
             projectGroup: '$projectGroup',
+            projectName: '$projectName',
+          },
+          // 把名字去重后放入数组
+          names: {
+            $addToSet: {
+              $concat: [
+                '$athleteClass',
+                ' ',
+                '$athleteName',
+                ' ',
+                '$level',
+                { $cond: ['$recordBreaking', ' (破)', ''] },
+              ],
+            },
+          },
+        },
+      },
+      // 2. 再次分组，把项目聚合成对象数组
+      {
+        $group: {
+          _id: {
+            ranking: '$_id.ranking',
+            projectGroup: '$_id.projectGroup',
           },
           items: {
-            $push: {
-              k: '$projectName',
-              v: '$fullName',
-            },
+            $push: { k: '$_id.projectName', v: '$names' }, // 此时 v 是一个数组
           },
         },
       },
