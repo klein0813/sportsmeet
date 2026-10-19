@@ -181,7 +181,7 @@ export class RecordService {
           if (res['recordBreaking']) {
             const flashRecordScore = REWARD_SCORE[project.category];
             updateSclass[className].text += `+${flashRecordScore}`;
-            updateSclass[className].score = flashRecordScore;
+            updateSclass[className].score += flashRecordScore;
           }
         }
       }
@@ -217,7 +217,7 @@ export class RecordService {
       if (
         bestRecord['recordBreaking'] &&
         bestRecord['level'] > project['record'] !==
-          bestRecord['level'] > project['newRecord']
+          bestRecord['level'] > (project['newRecord'] || -1)
       ) {
         updater.$set['newRecord'] = bestRecord['level'];
         updater.$set['recordHolder'] = {
