@@ -117,7 +117,6 @@ const handleSearch = (val) => {
 };
 
 const handleChange = (val) => {
-  console.log('handleChange', val);
   if (curProject.value.category) {
     // 团体赛，选择班级
     curAthlete = toRaw(scls.value).find((item) => item.value === val);
@@ -142,7 +141,6 @@ function getClassesByKeyword(arr, keyword, grade) {
 const onSubmit = () => {
   validate()
     .then(() => {
-      console.log('onSubmit', toRaw(modelRef));
       const data = toRaw(modelRef);
       data.level = data.level.replace(/^0+/, '');
       emits(EVENT_RECORE_ADD, { data, athlete: curAthlete, project: toRaw(curProject.value) });

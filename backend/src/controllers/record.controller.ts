@@ -156,6 +156,7 @@ export class RecordController {
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
     // 给第 1 行到第 10 行，1 到 4 列的所有单元格加边框

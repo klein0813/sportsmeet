@@ -6,7 +6,6 @@ import { GROUP_LEVEL_MAPPING } from '@/utils/constant';
 const data = ref([]);
 
 getAthletes().then((res) => {
-  console.log(res);
   data.value = res.data;
 });
 const columns = [

@@ -54,7 +54,7 @@ export class SclassController {
     'Content-Disposition',
     `attachment; filename=${contentDisposition('运动会年级积分排名.xlsx')}`,
   )
-  async downloadFlashRecordExcel(): Promise<StreamableFile> {
+  async downloadClassRankingExcel(): Promise<StreamableFile> {
     // 年级映射配置
     const gradeConfigs = [
       { grade: 1, sheetName: '高一' },
@@ -83,7 +83,7 @@ export class SclassController {
 
       const headerRow = worksheet.getRow(1);
       headerRow.font = { bold: true };
-      // headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+      headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
       // 设置列宽
       worksheet.columns.forEach((column) => {

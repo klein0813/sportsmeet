@@ -75,16 +75,17 @@ export async function getGradeTop3() {
   }
 }
 
+export async function exportClassRanking() {
+  try {
+    window.open('/ex/sclass/exrankda')
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function exportRecord() {
   try {
-    // const link = document.createElement('a')
-    // link.href = '/record/exproda'
-    // link.download = '运动会项目数据.xlsx'
-    // document.body.appendChild(link)
-    // link.click()
-    // document.body.removeChild(link)
-    window.open('/record/exproda')
-    // return instance.get('/record/exproda');
+    window.open('/ex/record/exproda')
   } catch (error) {
     console.error(error);
   }
@@ -98,7 +99,7 @@ export async function exportFlashRecord() {
     // document.body.appendChild(link)
     // link.click()
     // document.body.removeChild(link)
-    window.open('/record/exflada')
+    window.open('/ex/record/exflada')
     // return instance.get('/record/exproda');
   } catch (error) {
     console.error(error);

@@ -62,7 +62,6 @@ const edit = key => {
   editableData[key] = (data.value.filter(item => key === item._id)[0]).record;
 };
 const save = key => {
-  console.log('save', key, editableData[key]);
   const t = data.value.filter(item => key === item._id)[0];
   t.record = editableData[key];
   updateRecord(t._id, t.record).then(({ data }) => {

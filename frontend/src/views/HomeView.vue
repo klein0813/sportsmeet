@@ -19,7 +19,6 @@ const viewKey = ref('1');
 // const breadcrumbs = ref(['汇总', '高一'])
 
 const onMenuClick = (key) => {
-  console.log(key);
   viewKey.value = key;
 };
 
@@ -57,7 +56,7 @@ const breadcrumbs = computed(() => {
             </span>
           </template>
           <a-menu-item key="1" @click="onMenuClick('1')">总概</a-menu-item>
-          <a-menu-item key="2" @click="onMenuClick('2')">班级成绩表</a-menu-item>
+          <a-menu-item key="2" @click="onMenuClick('2')">成绩表</a-menu-item>
           <!-- <a-menu-item key="3" @click="onMenuClick('3')">高三</a-menu-item> -->
         </a-sub-menu>
         <a-menu-item key="4" @click="onMenuClick('4')">

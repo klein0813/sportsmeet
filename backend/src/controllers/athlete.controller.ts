@@ -65,10 +65,6 @@ export class AthleteController {
     worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
       if (rowNumber === 1) return; // 跳过表头
 
-      // row.values 返回的是一个数组，索引 0 是空位，数据从索引 1 开始
-      // 例如：[ <1 empty item>, '101', 292, 120 ]
-      // console.log(`第 ${rowNumber} 行数据:`, row.values);
-
       // 获取单个单元格的值
       const sid = row.getCell(2).value as string; // 号码
       const project1 = PROJECT_NAME_MAPPING[row.getCell(6).value as string]; // 项目

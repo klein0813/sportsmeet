@@ -1,6 +1,7 @@
 <script setup>
 import ECharts from '@/components/ECharts.vue';
 import { ref, watch } from 'vue';
+import { exportClassRanking } from '@/api';
 import { createTop3Excel }  from './exportTop3.js';
 const props = defineProps(['data']);
 
@@ -96,6 +97,7 @@ function exportChart() {
 
 // 导出全部数据
 function exportAll() {
+  exportClassRanking();
 }
 
 watch(() => props.data, (newVal) => {

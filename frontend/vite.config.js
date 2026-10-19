@@ -10,11 +10,12 @@ export default defineConfig({
   server: {
     hmr: true,
     proxy: {
-      '/record': {  // 直接用接口的真实前缀
+      '/ex': {
         target: 'http://localhost:31245',
         changeOrigin: true,
-        // 不需要 rewrite，因为路径本来就一致
-      },
+        // 剔除 /api 前缀，把真正的请求发给后端
+        rewrite: (path) => path.replace(/^\/ex/, '') 
+      }
     },
   },
   plugins: [
