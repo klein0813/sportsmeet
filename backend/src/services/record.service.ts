@@ -179,9 +179,9 @@ export class RecordService {
             };
           }
           if (res['recordBreaking']) {
-            updateSclass[className].text += `+${
-              REWARD_SCORE[project.category]
-            }`;
+            const flashRecordScore = REWARD_SCORE[project.category];
+            updateSclass[className].text += `+${flashRecordScore}`;
+            updateSclass[className].score = flashRecordScore;
           }
         }
       }
