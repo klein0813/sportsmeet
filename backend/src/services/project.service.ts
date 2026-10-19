@@ -45,9 +45,9 @@ export class ProjectService {
     const res = await this.projectModel.updateOne(
       {
         _id: new mongoose.Types.ObjectId(id),
-        'gradeStatus.1': false,
-        'gradeStatus.2': false,
-        'gradeStatus.3': false,
+        grade1Done: false,
+        grade2Done: false,
+        grade3Done: false,
       },
       {
         $set: {
