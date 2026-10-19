@@ -112,12 +112,12 @@ export class RecordController {
       // { header: 'ID', key: 'id', width: 10 },
       // { header: 'Name', key: 'name', width: 30 },
       { header: '年级', key: 'athleteGrade' },
+      { header: '类型', key: 'projectGroup' },
+      { header: '项目', key: 'projectName' },
       { header: '号码', key: 'athleteSid' },
       { header: '姓名', key: 'athleteName' },
       { header: '班级', key: 'athleteClass' },
       { header: '成绩', key: 'level' },
-      { header: '类型', key: 'projectGroup' },
-      { header: '项目', key: 'projectName' },
       { header: '名次', key: 'ranking' },
       { header: '积分', key: 'score' },
     ];
@@ -132,9 +132,12 @@ export class RecordController {
         athleteSid: record.athleteSid,
         athleteName: record.athleteName,
         athleteClass: record.athleteClass,
-        level: record.level,
+        level: CopmsUtil.levelNumber2String(
+          record.projectName,
+          `${record.level}`,
+        ),
         projectGroup: GENDER_MAPPING[record.projectGroup],
-        projectName: record.projectName,
+        projectName: GROUP_LEVEL_MAPPING[record.projectName],
         ranking: RANKING_MAPPING[record.ranking],
         score: record.score,
       });
@@ -162,7 +165,7 @@ export class RecordController {
         horizontal: 'center',
       };
       const row = worksheet.getRow(i);
-      for (let j = 1; j <= 7; j++) {
+      for (let j = 1; j <= 9; j++) {
         row.getCell(j).border = {
           top: { style: 'thin' },
           left: { style: 'thin' },
@@ -199,15 +202,14 @@ export class RecordController {
 
     // 添加一些数据
     worksheet.columns = [
-      // { header: 'ID', key: 'id', width: 10 },
-      // { header: 'Name', key: 'name', width: 30 },
       { header: '类型', key: 'projectGroup' },
       { header: '项目', key: 'projectName' },
+      { header: '号码', key: 'athleteSid' },
       { header: '年级', key: 'athleteGrade' },
       { header: '班级', key: 'athleteClass' },
-      { header: '号码', key: 'athleteSid' },
       { header: '姓名', key: 'athleteName' },
       { header: '成绩', key: 'level' },
+      { header: '原记录', key: 'orignRecord' },
     ];
     const q = {
       recordBreaking: true,
@@ -223,6 +225,10 @@ export class RecordController {
           record.projectName,
           `${record.level}`,
         ),
+        orignRecord: CopmsUtil.levelNumber2String(
+          record.projectName,
+          `${record.orignRecord}`,
+        ),
         projectGroup: GENDER_MAPPING[record.projectGroup],
         projectName: GROUP_LEVEL_MAPPING[record.projectName],
       });
@@ -230,7 +236,7 @@ export class RecordController {
 
     // 设置列宽
     worksheet.columns.forEach((column) => {
-      column.width = 12.5;
+      column.width = 11;
     });
     // 设置行高
     worksheet.eachRow({ includeEmpty: false }, (row) => {
@@ -241,6 +247,10 @@ export class RecordController {
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      };
     });
 
     // 给第 1 行到第 10 行，1 到 4 列的所有单元格加边框
@@ -250,7 +260,7 @@ export class RecordController {
         horizontal: 'center',
       };
       const row = worksheet.getRow(i);
-      for (let j = 1; j <= 7; j++) {
+      for (let j = 1; j <= 8; j++) {
         row.getCell(j).border = {
           top: { style: 'thin' },
           left: { style: 'thin' },

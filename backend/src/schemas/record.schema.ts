@@ -85,6 +85,11 @@ export class Record extends Base {
   recordBreaking: boolean; // 是否破纪录
 
   @Prop({
+    required: false,
+  })
+  orignRecord: number; // 原纪录
+
+  @Prop({
     required: true,
     default: '',
   })

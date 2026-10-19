@@ -134,6 +134,7 @@ export class RecordService {
         (project.type === 0 && record.level > project.record)
       ) {
         res['recordBreaking'] = true;
+        res['orignRecord'] = project.record;
       }
       // 成绩并列，排名相同，下一名次跳过
       if (lastLevel == record.level) {
@@ -392,7 +393,7 @@ export class RecordService {
         },
       },
       {
-        $sort: { sortScore: -1 },
+        $sort: { projectGroup: 1, projectName: 1, sortScore: -1 },
       },
       // 3. 隐藏虚拟字段（如果不需要返回给前端）
       {

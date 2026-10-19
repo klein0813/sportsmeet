@@ -12,7 +12,7 @@ export function levelNumber2String(projectName, numStr) {
     case 1: {
       const cm = numStr.slice(-2);
       const m = numStr.slice(0, -2);
-      return `${m || 0}.${cm}`;
+      return `${m || 0}.${cm}m`;
     }
     case 2: {
       return `第${numStr}名`;

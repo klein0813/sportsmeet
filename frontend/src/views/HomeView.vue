@@ -28,9 +28,9 @@ const breadcrumbs = computed(() => {
     case '1':
       return ['汇总', '总概'];
     case '2':
-      return ['汇总', '班级成绩表'];
-    case '3':
-      return  ['汇总', '高三'];
+      return ['汇总', '成绩表'];
+    // case '3':
+    //   return  ['汇总', '高三'];
     case '4':
       return  ['成绩'];
     case '5':
