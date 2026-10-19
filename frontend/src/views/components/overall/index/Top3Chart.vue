@@ -70,7 +70,7 @@ function initChart(initData) {
     title: {
       text: '年级积分前三名',
     },
-    grid: { top: '15%', left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    grid: { top: '18%', left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: {
       type: 'category',
       // 把原来的对象数组只提取 value 传给 data

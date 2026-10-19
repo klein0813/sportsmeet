@@ -71,6 +71,7 @@ const closeModal = () => {
   records.value = [];
   emits(EVENT_RECORE_MODAL_CLOSE);
   recordFormRef.value.reset();
+  loadingAddBtn.value = false;
 }
 
 const columns = ref([

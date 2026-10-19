@@ -65,8 +65,8 @@ const save = key => {
   console.log('save', key, editableData[key]);
   const t = data.value.filter(item => key === item._id)[0];
   t.record = editableData[key];
-  updateRecord(t._id, t.record).then((res) => {
-    if (res) {
+  updateRecord(t._id, t.record).then(({ data }) => {
+    if (data) {
       delete editableData[key];
       message.success('更新记录成功');
     } else {

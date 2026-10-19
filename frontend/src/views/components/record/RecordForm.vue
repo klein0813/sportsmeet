@@ -5,7 +5,7 @@ import { getAthletesByKeyword, getProjects } from '@/api';
 import { GENDER_MAPPING, EVENT_RECORE_ADD, GRADE_MAPPDING, GROUP_LEVEL_MAPPING } from '@/utils/constant';
 const props = defineProps(['projects', 'rounds', 'classes']);
 const emits = defineEmits([EVENT_RECORE_ADD]);
-const addedAthletes = [];
+let addedAthletes = [];
 
 const useForm = Form.useForm;
 const modelRef = reactive({
@@ -72,15 +72,16 @@ const projectOptions = ref([]);
 const handleGradeChange = (val) => {
   getProjects(0, val).then((res) => {
     projectOptions.value = res.data.map((item) => {
-    const showName = GROUP_LEVEL_MAPPING[item.name];
-    return {
-      value: item._id,
-      label: item.group < 2 ? `${showName} (${GENDER_MAPPING[item.group]})` : showName,
-      id: item._id,
-      category: item.category,
-      name: item.name,
-      group: item.group,
-    }});
+      const showName = GROUP_LEVEL_MAPPING[item.name];
+      return {
+        value: item._id,
+        label: item.group < 2 ? `${showName} (${GENDER_MAPPING[item.group]})` : showName,
+        id: item._id,
+        category: item.category,
+        name: item.name,
+        group: item.group,
+      }
+    });
   });
 }
 
@@ -157,6 +158,7 @@ const onSubmit = () => {
 function reset() {
   resetFields();
   projectReadonly.value = false;
+  addedAthletes = [];
 }
 
 defineExpose({
