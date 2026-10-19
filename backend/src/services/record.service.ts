@@ -114,11 +114,13 @@ export class RecordService {
       round: datas.round,
     };
     // 成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
-    datas.records.sort((a, b) =>
-      project.type === 1 ? a.level - b.level : b.level - a.level,
-    );
+    datas.records.sort((a, b) => {
+      const alevel = Number.parseInt(a.level);
+      const blevel = Number.parseInt(b.level);
+      return project.type === 1 ? alevel - blevel : blevel - alevel;
+    });
     const updateSclass = {};
-    let lastLevel = -99;
+    let lastLevel = '-99';
     let lastRanking = 0;
     const records = [];
     await datas.records.reduce(async (previousPromise, record, index) => {
@@ -129,9 +131,11 @@ export class RecordService {
       };
       // 是否破纪录，成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
       // 目前只支持个人项目的破纪录计分
+      const level = Number.parseInt(record.level);
       if (
-        (project.type === 1 && record.level < project.record) ||
-        (project.type === 0 && record.level > project.record)
+        project.record > -1 &&
+        ((project.type === 1 && level < project.record) ||
+          (project.type === 0 && level > project.record))
       ) {
         res['recordBreaking'] = true;
         res['orignRecord'] = project.record;

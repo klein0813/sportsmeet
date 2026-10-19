@@ -5,7 +5,7 @@ import { getAthletesByKeyword, getProjects } from '@/api';
 import { GENDER_MAPPING, EVENT_RECORE_ADD, GRADE_MAPPDING, GROUP_LEVEL_MAPPING } from '@/utils/constant';
 const props = defineProps(['projects', 'rounds', 'classes']);
 const emits = defineEmits([EVENT_RECORE_ADD]);
-let addedAthletes = [];
+let addedAthletes = ref([]);
 
 const useForm = Form.useForm;
 const modelRef = reactive({
@@ -91,8 +91,8 @@ const handleProjectChange = (val) => {
 };
 
 const athleteOptions = computed(() => {
-  const options = curProject.value.category ? toRaw(scls.value) : toRaw(athletes.value);
-  return options.filter(item => !addedAthletes.includes(item.value));
+  const options = curProject.value.category ? scls.value : athletes.value;
+  return toRaw(options).filter(item => !addedAthletes.value.includes(item.value));
 })
 
 const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v, value: k }));
@@ -104,7 +104,7 @@ const handleSearch = (val) => {
   }
   if (curProject.value.category) {
     // 团体赛，选择班级
-    scls.value = getClassesByKeyword(toRaw(props.classes), val, toRaw(modelRef).grade)
+    scls.value = getClassesByKeyword(toRaw(props.classes), val, toRaw(modelRef).grade);
   } else {
     // 个体赛，选择运动员
     getAthletesByKeyword({
@@ -145,7 +145,7 @@ const onSubmit = () => {
       data.level = data.level.replace(/^0+/, '');
       emits(EVENT_RECORE_ADD, { data, athlete: curAthlete, project: toRaw(curProject.value) });
       projectReadonly.value = true
-      addedAthletes.push(data.id);
+      addedAthletes.value.push(data.id);
       modelRef.id = undefined;
       modelRef.level = undefined;
     })
@@ -157,7 +157,8 @@ const onSubmit = () => {
 function reset() {
   resetFields();
   projectReadonly.value = false;
-  addedAthletes = [];
+  addedAthletes.value = [];
+  scls.value = [];
 }
 
 defineExpose({

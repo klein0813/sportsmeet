@@ -76,7 +76,7 @@ export const STR_GROUPS = ['0', '1', '2'];
 export const STR_ROUNDS = ['1', '2', '3'];
 export const PROJECT_DATA = {
   '100M': {
-    type: 1, // 0, 田赛，1，竞赛
+    type: 1, // 0, 成绩数值越大越好，1，成绩数值越小越好。
     category: 0, // 0, 单项；1，团体赛, 2, 班级赛
     record: -1, // 记录
   },
@@ -116,12 +116,12 @@ export const PROJECT_DATA = {
     record: -1,
   },
   tugOfWar: {
-    type: 0,
+    type: 1,
     category: 2,
     record: -1,
   },
   ropeJump: {
-    type: 1,
+    type: 0,
     category: 2,
     record: -1,
   },

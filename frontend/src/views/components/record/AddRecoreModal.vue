@@ -121,6 +121,7 @@ const columns = ref([
   <a-modal
     v-model:open="open"
     title="添加成绩"
+    width="567px"
     cancelText="取消"
     okText="提交"
     @afterClose="closeModal"

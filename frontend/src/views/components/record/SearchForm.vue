@@ -45,10 +45,10 @@ const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v,
       <a-select v-model:value="formState.round" :options="PROJECT_ROUND" placeholder="轮次"></a-select>
     </a-form-item> -->
     <a-form-item class="form-item" label="班级">
-      <a-input v-model:value="formState.class" style="width: 110px" placeholder="班级"></a-input>
+      <a-input v-model:value="formState.class" style="width: 100px" placeholder="班级"></a-input>
     </a-form-item>
     <a-form-item class="form-item" label="号码">
-      <a-input v-model:value="formState.sid" style="width: 110px" placeholder="号码"></a-input>
+      <a-input v-model:value="formState.sid" style="width: 100px" placeholder="号码"></a-input>
     </a-form-item>
     <a-form-item class="form-item" label="破记录">
       <a-select v-model:value="formState.recordBreaking" placeholder="破记录">
@@ -84,7 +84,7 @@ const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v,
 }
 
 .form-item {
-  width: 150px;
+  width: 140px;
   text-align: left;
 }
 </style>
