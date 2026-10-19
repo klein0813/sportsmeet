@@ -120,73 +120,74 @@ export class RecordService {
     const updateSclass = {};
     let lastLevel = -99;
     let lastRanking = 0;
-    const records = await Promise.all(
-      datas.records.map(async (record, index) => {
-        const res = {
-          ...data,
-          level: record.level,
-        };
-        // 是否破纪录，成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
-        // 目前只支持个人项目的破纪录计分
-        if (
-          (project.type === 1 && record.level < project.record) ||
-          (project.type === 0 && record.level > project.record)
-        ) {
-          res['recordBreaking'] = true;
-        }
-        // 成绩并列，排名相同，下一名次跳过
-        if (lastLevel == record.level) {
-          res['ranking'] = lastRanking;
-        } else {
-          res['ranking'] = index + 1;
-          lastRanking = res['ranking'];
-          lastLevel = record.level;
-        }
-        let sclass;
-        if (project.category === 0) {
-          // 单项
-          const athlete = await this.athleteModel.findById(record.athleteId);
-          res['athleteSid'] = athlete.sid;
-          res['athleteClass'] = athlete.class;
-          res['athleteId'] = athlete._id;
-          res['athleteName'] = athlete.name;
-          res['athleteGrade'] = athlete.grade;
-          sclass = await this.sclassModel.findOne({ name: athlete.class });
-        } else {
-          // 团体项目
-          sclass = await this.sclassModel.findById(record.athleteId);
-          res['athleteClass'] = sclass.name;
-          res['athleteGrade'] = sclass.grade;
-          res['athleteName'] = '';
-        }
-        // 预决赛、决赛，说明比赛结束，需要统计分数
-        if (datas.round >= 2) {
-          res['score'] = SCORE_RULE[project.category][res['ranking'] - 1] || 0;
-          if (res['score'] > 0) {
-            const className = sclass['name'];
-            if (updateSclass[className]) {
-              const sclass = updateSclass[className];
-              sclass.text = `${sclass.text}+${res['score']}`;
-              sclass.score = sclass.score + res['score'];
-            } else {
-              updateSclass[className] = {
-                text: `${res['score']}`,
-                score: res['score'],
-                originText: sclass.projects[project.name],
-                originScore: sclass.score,
-                ranking: res['ranking'],
-              };
-            }
-            if (res['recordBreaking']) {
-              updateSclass[className].text += `+${
-                REWARD_SCORE[project.category]
-              }`;
-            }
+    const records = [];
+    await datas.records.reduce(async (previousPromise, record, index) => {
+      await previousPromise;
+      const res = {
+        ...data,
+        level: record.level,
+      };
+      // 是否破纪录，成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
+      // 目前只支持个人项目的破纪录计分
+      if (
+        (project.type === 1 && record.level < project.record) ||
+        (project.type === 0 && record.level > project.record)
+      ) {
+        res['recordBreaking'] = true;
+      }
+      // 成绩并列，排名相同，下一名次跳过
+      if (lastLevel == record.level) {
+        res['ranking'] = lastRanking;
+      } else {
+        res['ranking'] = index + 1;
+        lastRanking = res['ranking'];
+        lastLevel = record.level;
+      }
+      let sclass;
+      if (project.category === 0) {
+        // 单项
+        const athlete = await this.athleteModel.findById(record.athleteId);
+        res['athleteSid'] = athlete.sid;
+        res['athleteClass'] = athlete.class;
+        res['athleteId'] = athlete._id;
+        res['athleteName'] = athlete.name;
+        res['athleteGrade'] = athlete.grade;
+        sclass = await this.sclassModel.findOne({ name: athlete.class });
+      } else {
+        // 团体项目
+        sclass = await this.sclassModel.findById(record.athleteId);
+        res['athleteClass'] = sclass.name;
+        res['athleteGrade'] = sclass.grade;
+        res['athleteName'] = '';
+      }
+      // 预决赛、决赛，说明比赛结束，需要统计分数
+      if (datas.round >= 2) {
+        res['score'] = SCORE_RULE[project.category][res['ranking'] - 1] || 0;
+        if (res['score'] > 0) {
+          const className = sclass['name'];
+          if (updateSclass[className]) {
+            const sclass = updateSclass[className];
+            sclass.text = `${sclass.text}+${res['score']}`;
+            sclass.score = sclass.score + res['score'];
+          } else {
+            updateSclass[className] = {
+              text: `${res['score']}`,
+              score: res['score'],
+              originText: sclass.projects[project.name],
+              originScore: sclass.score,
+              ranking: res['ranking'],
+            };
+          }
+          if (res['recordBreaking']) {
+            updateSclass[className].text += `+${
+              REWARD_SCORE[project.category]
+            }`;
           }
         }
-        return res;
-      }),
-    );
+      }
+      records.push(res);
+      return res;
+    }, Promise.resolve());
     // 更新班级积分
     Object.keys(updateSclass).forEach(async (className) => {
       const updateSclassData = updateSclass[className];
