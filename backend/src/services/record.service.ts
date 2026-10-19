@@ -209,11 +209,22 @@ export class RecordService {
     });
     // 预决赛、决赛，说明比赛结束
     // 1.标注项目比赛完成
-    // 2.若破纪录了，更新记录
+    // 2.若破纪录了，并且成绩比新纪录要好，更新记录
     if (datas.round >= 2) {
-      const updater = { $set: { [`grade${datas.grade}Done`]: true } };
-      if (records[0]['recordBreaking']) {
-        updater.$set['newRecord'] = records[0]['level'];
+      const updater: any = { $set: { [`grade${datas.grade}Done`]: true } };
+      const bestRecord = records[0];
+      if (
+        bestRecord['recordBreaking'] &&
+        bestRecord['level'] > project['record'] !==
+          bestRecord['level'] > project['newRecord']
+      ) {
+        updater.$set['newRecord'] = bestRecord['level'];
+        updater.$set['recordHolder'] = {
+          name: bestRecord['athleteName'],
+          class: bestRecord['athleteClass'],
+          flag: bestRecord['flag'],
+          time: new Date(),
+        };
       }
       await this.projectModel.findByIdAndUpdate(datas.projectId, updater);
     }
