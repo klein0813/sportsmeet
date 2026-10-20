@@ -17,7 +17,7 @@ const columns = [
   {
     title: '项目名',
     dataIndex: 'name',
-    customRender: ({ text }) => ghostTag(GROUP_LEVEL_MAPPING[text], hashColor(text))
+    customRender: ({ text }) => ghostTag(GROUP_LEVEL_MAPPING[text], hashColor(text), 72)
   },
   {
     title: '形式',
@@ -85,7 +85,7 @@ const columns = [
     dataIndex: 'rewardScore',
     customRender: ({ record }) => h(Tag,
       { style: { width: '30px', textAlign: 'center' } },
-      () => (record.category == 0 && record.record > 0) ? REWARD_SCORE[record.category] : '-'),
+      () => record.record > 0 ? REWARD_SCORE[record.category] : '-'),
   },
   {
     title: '状态',

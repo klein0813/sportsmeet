@@ -11,7 +11,7 @@ export default defineConfig({
     hmr: true,
     proxy: {
       '/ex': {
-        target: 'http://localhost:31245',
+        target: 'http://172.16.50.65:31245',
         changeOrigin: true,
         // 剔除 /api 前缀，把真正的请求发给后端
         rewrite: (path) => path.replace(/^\/ex/, '') 

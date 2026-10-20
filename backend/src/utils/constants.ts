@@ -29,6 +29,8 @@ export const SCORE_RULE = {
 };
 export const REWARD_SCORE = {
   0: 10,
+  1: 10,
+  2: 10,
 };
 export const GRADE_MAPPING = {
   1: '高一',
