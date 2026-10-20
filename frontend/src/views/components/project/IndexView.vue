@@ -1,19 +1,23 @@
 <script setup>
 import { ref, reactive, h } from 'vue';
 import { Tag } from 'ant-design-vue'
-import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { CheckOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue';
 import { getProjects, updateRecord } from '@/api';
 import { GROUP_LEVEL_MAPPING, REWARD_SCORE } from '@/utils/constant'
-import { levelNumber2String } from '@/utils/common';
+import { levelNumber2String, hashColor } from '@/utils/common';
 {/* <EditOutlined /> */}
 const data = ref([]);
+
+const ghostTag = (text, color, width='56') => h(Tag, {
+  style: { color, borderColor: color, backgroundColor: 'transparent', width: `${width}px`, textAlign: 'center' }
+}, () => text);
 
 const columns = [
   {
     title: '项目名',
     dataIndex: 'name',
-    customRender: ({ text }) => GROUP_LEVEL_MAPPING[text],
+    customRender: ({ text }) => ghostTag(GROUP_LEVEL_MAPPING[text], hashColor(text))
   },
   {
     title: '形式',
@@ -34,33 +38,97 @@ const columns = [
     },
   },
   {
+    title: '记录保持者',
+    dataIndex: 'recordHolder',
+    customRender: ({ text }) => {
+      const baseTagStyle = {
+        width: '72px',
+        textAlign: 'center',      // 文字水平居中
+      };
+      if (!text) return h(Tag, { style: { ...baseTagStyle }}, () => '-');
+      const renderTag = (text, color) => {
+        return h(Tag, {
+          color,
+          style: {
+            ...baseTagStyle,
+            visibility: text ? 'visible' : 'hidden'
+          }
+        }, () => text);
+      };
+      return h(
+        'div', 
+        { 
+          style: { 
+            display: 'flex', 
+            gap: '6px', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            flexWrap: 'wrap' // 如果单元格太窄，允许自动换行
+          } 
+        }, 
+        [
+          renderTag(text.name, 'blue'),
+          renderTag(text.class, 'orange'),
+          renderTag(text.date, 'green')
+        ]
+      );
+    }
+  },
+  {
     title: '新记录',
     key: 'newRecord',
     dataIndex: 'newRecord',
-    customRender: ({ text, record }) => text ? h(Tag, { color: '#f50' }, () => levelNumber2String(record.name, `${text}`)) : '',
+    customRender: ({ text, record }) => text ? ghostTag(levelNumber2String(record.name, `${text}`), '#f50') : '',
   },
   {
     title: '奖励得分',
     dataIndex: 'rewardScore',
-    customRender: ({ record }) => (record.category == 0 && record.record > 0) ? REWARD_SCORE[record.category] : '-',
+    customRender: ({ record }) => h(Tag,
+      { style: { width: '30px', textAlign: 'center' } },
+      () => (record.category == 0 && record.record > 0) ? REWARD_SCORE[record.category] : '-'),
   },
   {
     title: '状态',
     dataIndex: 'status',
     customRender: ({ record }) => {
-      if (record['grade1Done'] && record['grade2Done'] && record['grade3Done']) {
-        return h(Tag, { color: 'success' }, () => '已完赛'); 
-      }
-      return h(Tag, { color: 'error' }, () => '未完赛'); 
+      const grades = [
+        { label: '高一', key: 'grade1Done' },
+        { label: '高二', key: 'grade2Done' },
+        { label: '高三', key: 'grade3Done' },
+      ];
+
+      // 使用 h 函数返回一个 div，内部包裹 3 个 Tag
+      return h(
+        'div', 
+        {
+          style: { 
+            display: 'flex', 
+            gap: '6px', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            flexWrap: 'wrap' // 如果单元格太窄，允许自动换行
+          } 
+        }, // 使用 flex 布局和间距
+        grades.map(item => {
+          const isDone = record[item.key];
+          return h(
+            Tag, 
+            { 
+              color: isDone ? 'success' : 'error' 
+            }, 
+            () => isDone ? `${item.label}已完赛` : `${item.label}未完赛`
+          );
+        })
+      )
     },
   },
 ];
 getPageProjects()
 
 const editableData = reactive({});
-const edit = key => {
-  editableData[key] = (data.value.filter(item => key === item._id)[0]).record;
-};
+// const edit = key => {
+//   editableData[key] = (data.value.filter(item => key === item._id)[0]).record;
+// };
 const save = key => {
   const t = data.value.filter(item => key === item._id)[0];
   t.record = editableData[key];
@@ -98,7 +166,7 @@ function getPageProjects() {
           <check-outlined class="editable-cell-icon-check" @click="save(record._id)" />
         </div>
         <div v-else class="editable-cell-text-wrapper">
-          <a-tag>{{ text == -1 ? '-' : levelNumber2String(record.name, `${text}`) }}</a-tag>
+          <a-tag style="width: 60px; text-align: center;">{{ text == -1 ? '-' : levelNumber2String(record.name, `${text}`) }}</a-tag>
           <!-- <edit-outlined
             v-if="!(record['grade1Done'] && record['grade2Done'] && record['grade3Done'])"
             class="editable-cell-icon"

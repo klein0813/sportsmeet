@@ -139,4 +139,8 @@ const breadcrumbs = computed(() => {
   height: calc(100vh - 124px);
   overflow-y: scroll;
 }
+
+.ant-tag:last-child {
+  margin-right: 0 !important;
+}
 </style>

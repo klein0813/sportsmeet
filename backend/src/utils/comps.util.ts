@@ -28,7 +28,6 @@ export default class CopmsUtil {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
 
-    const formattedDate = `${year}-${month}`;
-    console.log(formattedDate); // 输出例如："2026-10"
+    return `${year}-${month}`;
   }
 }
