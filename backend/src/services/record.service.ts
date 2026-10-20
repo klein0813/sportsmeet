@@ -5,6 +5,7 @@ import { RecordDocument } from 'src/schemas/record.schema';
 import { ProjectDocument } from 'src/schemas/project.schema';
 import { AthleteDocument } from 'src/schemas/athlete.schema';
 import { SclassDocument } from 'src/schemas/sclass.schema';
+import CopmsUtil from 'src/utils/comps.util';
 import {
   PROJECTS,
   SCLASS,
@@ -72,15 +73,26 @@ export class RecordService {
     PROJECTS.forEach((item) => {
       const projectData = PROJECT_DATA[item];
       const project = {
-        ...projectData,
+        type: projectData.type,
+        category: projectData.category,
         name: item,
         flag: FLAG,
       };
       if (projectData.category === 2) {
-        projects.push({ ...project, group: 2 });
+        projects.push({ ...project, record: projectData.record, group: 2 });
       } else {
-        projects.push({ ...project, group: 0 });
-        projects.push({ ...project, group: 1 });
+        projects.push({
+          ...project,
+          record: projectData.record[0].v,
+          recordHolder: projectData.record[0],
+          group: 0,
+        });
+        projects.push({
+          ...project,
+          record: projectData.record[1].v,
+          recordHolder: projectData.record[1],
+          group: 1,
+        });
       }
       projectsObj[item] = '';
     });
@@ -221,15 +233,16 @@ export class RecordService {
       const bestRecord = records[0];
       if (
         bestRecord['recordBreaking'] &&
-        bestRecord['level'] > project['record'] !==
-          bestRecord['level'] > (project['newRecord'] || -1)
+        (!project['newRecord'] ||
+          bestRecord['level'] > project['record'] ===
+            bestRecord['level'] > project['newRecord'])
       ) {
         updater.$set['newRecord'] = bestRecord['level'];
         updater.$set['recordHolder'] = {
           name: bestRecord['athleteName'],
           class: bestRecord['athleteClass'],
           flag: bestRecord['flag'],
-          time: new Date(),
+          date: CopmsUtil.getDateYM(),
         };
       }
       await this.projectModel.findByIdAndUpdate(datas.projectId, updater);

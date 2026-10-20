@@ -78,42 +78,66 @@ export const PROJECT_DATA = {
   '100M': {
     type: 1, // 0, 成绩数值越大越好，1，成绩数值越小越好。
     category: 0, // 0, 单项；1，团体赛, 2, 班级赛
-    record: -1, // 记录
+    record: [
+      { name: '卢徐恩', class: '301', v: 1127, date: '2025-10' },
+      { name: '谭奥林', class: '311', v: 1498, date: '2025-10' },
+    ],
   },
   '200M': {
     type: 1,
     category: 0,
-    record: -1,
+    record: [
+      { name: '刘岚涛', class: '311', v: 2447, date: '2024-10' },
+      { name: '魏纳', class: '301', v: 3266, date: '2025-10' },
+    ],
   },
   '400M': {
     type: 1,
     category: 0,
-    record: -1,
+    record: [
+      { name: '程梓盛', class: '318', v: 5413, date: '2025-10' },
+      { name: '李佳慧', class: '306', v: 11177, date: '2025-10' },
+    ],
   },
   '800M': {
     type: 1,
     category: 0,
-    record: -1,
+    record: [
+      { name: '程梓盛', class: '318', v: 20878, date: '2025-10' },
+      { name: '肖雯慧', class: '113', v: 30591, date: '2024-10' },
+    ],
   },
   '1500M': {
     type: 1,
     category: 0,
-    record: -1,
+    record: [
+      { name: '苏硕', class: '311', v: 44546, date: '2024-10' },
+      { name: '黄欣莹', class: '311', v: 63063, date: '2024-10' },
+    ],
   },
   highJump: {
     type: 0,
     category: 0,
-    record: -1,
+    record: [
+      { name: '张毅明', class: '208', v: 160, date: '2025-10' },
+      { name: '金璐', class: '315', v: 123, date: '2025-10' },
+    ],
   },
   longJump: {
     type: 0,
     category: 0,
-    record: -1,
+    record: [
+      { name: '张耀星', class: '315', v: 585, date: '2025-10' },
+      { name: '金璐', class: '119', v: 370, date: '2024-10' },
+    ],
   },
   shotPut: {
     type: 0,
     category: 0,
-    record: -1,
+    record: [
+      { name: '林锦康', class: '314', v: 1165, date: '2025-10' },
+      { name: '张姣怡', class: '209', v: 734, date: '2025-10' },
+    ],
   },
   tugOfWar: {
     type: 1,
@@ -128,7 +152,10 @@ export const PROJECT_DATA = {
   '4X100M': {
     type: 1,
     category: 1,
-    record: -1,
+    record: [
+      { name: '', class: '318', v: 4709, date: '2024-10' },
+      { name: '', class: '313', v: 10436, date: '2024-10' },
+    ],
   },
   '30×50MRelay': {
     type: 1,

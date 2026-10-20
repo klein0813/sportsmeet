@@ -99,11 +99,11 @@ function getPageProjects() {
         </div>
         <div v-else class="editable-cell-text-wrapper">
           <a-tag>{{ text == -1 ? '-' : levelNumber2String(record.name, `${text}`) }}</a-tag>
-          <edit-outlined
+          <!-- <edit-outlined
             v-if="!(record['grade1Done'] && record['grade2Done'] && record['grade3Done'])"
             class="editable-cell-icon"
             @click="edit(record._id)"
-          />
+          /> -->
         </div>
       </div>
     </template>

@@ -37,7 +37,7 @@ export class Project extends Base {
     required: false,
     type: MongooseSchema.Types.Mixed,
   })
-  recordHolder: any; // { name: string; class: string; flag: string, time: new Date() }; 记录保持者
+  recordHolder: any; // { name: string; class: string; flag: string, date: new Date() }; 记录保持者
 
   @Prop({
     required: true,
