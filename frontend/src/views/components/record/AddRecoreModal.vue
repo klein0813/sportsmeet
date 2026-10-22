@@ -54,7 +54,7 @@ const handleOk = () => {
     })
   };
   addRecords(data).then(({ data }) => {
-    if (data?.length) {
+    if (data) {
       open.value = false;
       loadingAddBtn.value = false;
       emits(EVENT_RECORE_ADD_SUCCESS);
@@ -175,6 +175,7 @@ const columns = ref([
     @cancel="closeModal"
     :maskClosable="false"
     :confirmLoading="loadingAddBtn"
+    :okButtonProps="{ disabled: records.length < 1 }"
   >
     <RecordForm
       ref="recordFormRef"

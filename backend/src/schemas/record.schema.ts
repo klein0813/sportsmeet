@@ -101,6 +101,13 @@ export class Record extends Base {
 }
 
 export const RecordSchema = SchemaFactory.createForClass(Record);
-RecordSchema.index({ projectId: 1, athleteId: 1, round: 1 }, { unique: true });
+RecordSchema.index(
+  { projectId: 1, athleteId: 1, round: 1 },
+  {
+    unique: true,
+    // 只有在 category === 0 (单项) 时，才强制要求唯一，团体赛允许重复
+    partialFilterExpression: { category: 0 },
+  },
+);
 RecordSchema.index({ athleteGrade: 1, projectGroup: 1, ranking: 1 });
 RecordSchema.index({ projectId: 1, athleteGrade: 1, round: 1 });

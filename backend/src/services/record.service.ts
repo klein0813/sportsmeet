@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Connection } from 'mongoose';
 import { RecordDocument } from 'src/schemas/record.schema';
@@ -116,140 +116,166 @@ export class RecordService {
   }
 
   async batchInsert(datas) {
-    const project = await this.projectModel.findById(datas.projectId);
-    const data = {
-      projectId: project._id,
-      projectName: project.name,
-      projectType: project.type,
-      projectGroup: project.group,
-      category: project.category,
-      flag: datas.flag,
-      round: datas.round,
-    };
-    // 成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
-    datas.records.sort((a, b) => {
-      const alevel = Number.parseInt(a.level);
-      const blevel = Number.parseInt(b.level);
-      return project.type === 1 ? alevel - blevel : blevel - alevel;
-    });
-    const updateSclass = {};
-    let lastLevel = '-99';
-    let lastRanking = 0;
-    const records = [];
-    await datas.records.reduce(async (previousPromise, record, index) => {
-      await previousPromise;
-      const res = {
-        ...data,
-        level: record.level,
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      const project = await this.projectModel
+        .findById(datas.projectId)
+        .session(session);
+      const data = {
+        projectId: project._id,
+        projectName: project.name,
+        projectType: project.type,
+        projectGroup: project.group,
+        category: project.category,
+        flag: datas.flag,
+        round: datas.round,
       };
-      // 是否破纪录，成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
-      // 目前只支持个人项目的破纪录计分
-      const level = Number.parseInt(record.level);
-      if (
-        project.record > -1 &&
-        ((project.type === 1 && level < project.record) ||
-          (project.type === 0 && level > project.record))
-      ) {
-        res['recordBreaking'] = true;
-        res['orignRecord'] = project.record;
-      }
-      // 成绩并列，排名相同，下一名次跳过
-      if (lastLevel == record.level) {
-        res['ranking'] = lastRanking;
-      } else {
-        res['ranking'] = index + 1;
-        lastRanking = res['ranking'];
-        lastLevel = record.level;
-      }
-      let sclass;
-      if (project.category === 0) {
-        // 单项
-        const athlete = await this.athleteModel.findById(record.athleteId);
-        res['athleteSid'] = athlete.sid;
-        res['athleteClass'] = athlete.class;
-        res['athleteId'] = athlete._id;
-        res['athleteName'] = athlete.name;
-        res['athleteGrade'] = athlete.grade;
-        sclass = await this.sclassModel.findOne({ name: athlete.class });
-      } else {
-        // 团体项目
-        sclass = await this.sclassModel.findById(record.athleteId);
-        res['athleteClass'] = sclass.name;
-        res['athleteGrade'] = sclass.grade;
-        res['athleteName'] = '';
-      }
-      // 预决赛、决赛，说明比赛结束，需要统计分数
-      if (datas.round >= 2) {
-        res['score'] = SCORE_RULE[project.category][res['ranking'] - 1] || 0;
-        if (res['score'] > 0) {
-          const className = sclass['name'];
-          if (updateSclass[className]) {
-            const sclass = updateSclass[className];
-            sclass.text = `${sclass.text}+${res['score']}`;
-            sclass.score = sclass.score + res['score'];
-          } else {
-            updateSclass[className] = {
-              text: `${res['score']}`,
-              score: res['score'],
-              originText: sclass.projects[project.name],
-              originScore: sclass.score,
-              ranking: res['ranking'],
-            };
-          }
-          if (res['recordBreaking']) {
-            const flashRecordScore = REWARD_SCORE[project.category];
-            updateSclass[className].text += `+${flashRecordScore}`;
-            updateSclass[className].score += flashRecordScore;
+      // 成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
+      datas.records.sort((a, b) => {
+        const alevel = Number.parseInt(a.level);
+        const blevel = Number.parseInt(b.level);
+        return project.type === 1 ? alevel - blevel : blevel - alevel;
+      });
+      const updateSclass = {};
+      let lastLevel = '-99';
+      let lastRanking = 0;
+      const records = [];
+      await datas.records.reduce(async (previousPromise, record, index) => {
+        await previousPromise;
+        const res = {
+          ...data,
+          level: record.level,
+        };
+        // 是否破纪录，成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
+        // 目前只支持个人项目的破纪录计分
+        const level = Number.parseInt(record.level);
+        if (
+          project.record > -1 &&
+          ((project.type === 1 && level < project.record) ||
+            (project.type === 0 && level > project.record))
+        ) {
+          res['recordBreaking'] = true;
+          res['orignRecord'] = project.record;
+        }
+        // 成绩并列，排名相同，下一名次跳过
+        if (lastLevel == record.level) {
+          res['ranking'] = lastRanking;
+        } else {
+          res['ranking'] = index + 1;
+          lastRanking = res['ranking'];
+          lastLevel = record.level;
+        }
+        let sclass;
+        if (project.category === 0) {
+          // 单项
+          const athlete = await this.athleteModel
+            .findById(record.athleteId)
+            .session(session);
+          res['athleteSid'] = athlete.sid;
+          res['athleteClass'] = athlete.class;
+          res['athleteId'] = athlete._id;
+          res['athleteName'] = athlete.name;
+          res['athleteGrade'] = athlete.grade;
+          sclass = await this.sclassModel
+            .findOne({ name: athlete.class })
+            .session(session);
+        } else {
+          // 团体项目
+          sclass = await this.sclassModel
+            .findById(record.athleteId)
+            .session(session);
+          res['athleteClass'] = sclass.name;
+          res['athleteGrade'] = sclass.grade;
+          res['athleteName'] = '';
+        }
+        // 预决赛、决赛，说明比赛结束，需要统计分数
+        if (datas.round >= 2) {
+          res['score'] = SCORE_RULE[project.category][res['ranking'] - 1] || 0;
+          if (res['score'] > 0) {
+            const className = sclass['name'];
+            if (updateSclass[className]) {
+              const sclass = updateSclass[className];
+              sclass.text = `${sclass.text}+${res['score']}`;
+              sclass.score = sclass.score + res['score'];
+            } else {
+              updateSclass[className] = {
+                text: `${res['score']}`,
+                score: res['score'],
+                originText: sclass.projects[project.name],
+                originScore: sclass.score,
+                ranking: res['ranking'],
+              };
+            }
+            if (res['recordBreaking']) {
+              const flashRecordScore = REWARD_SCORE[project.category];
+              updateSclass[className].text += `+${flashRecordScore}`;
+              updateSclass[className].score += flashRecordScore;
+            }
           }
         }
+        records.push(res);
+        return res;
+      }, Promise.resolve());
+      // 更新班级积分
+      Object.keys(updateSclass).forEach(async (className) => {
+        const updateSclassData = updateSclass[className];
+        const { text, score, originText, originScore, ranking } =
+          updateSclassData;
+        // // 给分数添加组别（男/女）
+        // if (project.group < 2) {
+        //   text = `${text}(${GENDER_MAPPING[project.group]})`;
+        // }
+        await this.sclassModel
+          .updateOne(
+            { name: className },
+            {
+              $set: {
+                [`projects.${project.name}`]: `${originText ?? ''}+${text}`,
+                score: originScore + score,
+              },
+              $inc: { [`rankingCounts.no${ranking}`]: 1 },
+            },
+          )
+          .session(session);
+      });
+      // 预决赛、决赛，说明比赛结束
+      // 1.标注项目比赛完成
+      // 2.若破纪录了，并且成绩比新纪录要好，更新记录
+      if (datas.round >= 2) {
+        const updater: any = { $set: { [`grade${datas.grade}Done`]: true } };
+        const bestRecord = records[0];
+        if (
+          bestRecord['recordBreaking'] &&
+          (!project['newRecord'] ||
+            bestRecord['level'] > project['record'] ===
+              bestRecord['level'] > project['newRecord'])
+        ) {
+          updater.$set['newRecord'] = bestRecord['level'];
+          updater.$set['recordHolder'] = {
+            name: bestRecord['athleteName'],
+            class: bestRecord['athleteClass'],
+            flag: bestRecord['flag'],
+            date: CopmsUtil.getDateYM(),
+          };
+        }
+        await this.projectModel
+          .findByIdAndUpdate(datas.projectId, updater)
+          .session(session);
       }
-      records.push(res);
-      return res;
-    }, Promise.resolve());
-    // 更新班级积分
-    Object.keys(updateSclass).forEach(async (className) => {
-      const updateSclassData = updateSclass[className];
-      const { text, score, originText, originScore, ranking } =
-        updateSclassData;
-      // // 给分数添加组别（男/女）
-      // if (project.group < 2) {
-      //   text = `${text}(${GENDER_MAPPING[project.group]})`;
-      // }
-      await this.sclassModel.updateOne(
-        { name: className },
-        {
-          $set: {
-            [`projects.${project.name}`]: `${originText ?? ''}+${text}`,
-            score: originScore + score,
-          },
-          $inc: { [`rankingCounts.no${ranking}`]: 1 },
-        },
-      );
-    });
-    // 预决赛、决赛，说明比赛结束
-    // 1.标注项目比赛完成
-    // 2.若破纪录了，并且成绩比新纪录要好，更新记录
-    if (datas.round >= 2) {
-      const updater: any = { $set: { [`grade${datas.grade}Done`]: true } };
-      const bestRecord = records[0];
-      if (
-        bestRecord['recordBreaking'] &&
-        (!project['newRecord'] ||
-          bestRecord['level'] > project['record'] ===
-            bestRecord['level'] > project['newRecord'])
-      ) {
-        updater.$set['newRecord'] = bestRecord['level'];
-        updater.$set['recordHolder'] = {
-          name: bestRecord['athleteName'],
-          class: bestRecord['athleteClass'],
-          flag: bestRecord['flag'],
-          date: CopmsUtil.getDateYM(),
-        };
-      }
-      await this.projectModel.findByIdAndUpdate(datas.projectId, updater);
-    }
 
-    return this.recordModel.insertMany(records);
+      await this.recordModel.insertMany(records, { session });
+      await session.commitTransaction();
+    } catch (error) {
+      // 发生任何错误，回滚所有操作
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      throw error;
+    } finally {
+      await session.endSession();
+    }
+    return true;
   }
 
   async getTop(top: number, grade: number) {
@@ -376,9 +402,8 @@ export class RecordService {
           // 查询该班级在【该年级、该项目】下是否还有剩余成绩（解决男女组共用一个名字的问题）
           const remainingClassRecords = await this.recordModel
             .find({
-              projectId: projectId,
+              projectName: project.name,
               athleteClass: className,
-              round,
             })
             .sort({ ranking: 1 })
             .session(session);
@@ -387,6 +412,7 @@ export class RecordService {
             // 如果还有成绩（比如女子组的成绩没被撤销），重新生成积分字符串
             const remainScores = remainingClassRecords
               .map((r) => {
+                if (!r.score) return '';
                 if (r.recordBreaking) {
                   return `+${r.score}+${REWARD_SCORE[project.category]}`;
                 }
@@ -407,12 +433,12 @@ export class RecordService {
       }
       await session.commitTransaction();
     } catch (error) {
+      console.error('发生错误，触发回滚:', error);
       // 发生任何错误，回滚所有操作
-      console.error('【真正的错误在这里】:', error);
       if (session.inTransaction()) {
         await session.abortTransaction();
       }
-      throw error;
+      throw new BadRequestException('操作失败，请稍后重试');
     } finally {
       await session.endSession();
     }
