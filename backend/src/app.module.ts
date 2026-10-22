@@ -13,7 +13,9 @@ import { SclassModule } from './modules/sclass.module';
     AthleteModule,
     RecordModule,
     SclassModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/sportsmeet'),
+    MongooseModule.forRoot(
+      'mongodb://localhost:27017/sportsmeet?replicaSet=rs0',
+    ),
   ],
   controllers: [AppController],
   providers: [AppService],

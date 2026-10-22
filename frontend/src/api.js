@@ -59,6 +59,22 @@ export async function getTopRecords(grade, top) {
   }
 }
 
+export async function getProjectRecords(projectId, grade, round) {
+  try {
+    return instance.get('/record/find', { params: { projectId, grade, round }});
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function revokeProjectRecords(query) {
+  try {
+    return instance.post('/record/revoke', { ...query });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function getGroupRecords(grade) {
   try {
     return instance.get(`/sclass?grade=${grade}`);

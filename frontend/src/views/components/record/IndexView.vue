@@ -18,8 +18,16 @@ let lastSearchQuery = {};
 
 const records = ref([]);
 const openAddRecoreModal = ref(false);
+const revoke = ref(false);
+
 const showModal = () => {
+  revoke.value = false;
   openAddRecoreModal.value = true;
+};
+
+const showRevokeModal = () => {
+  openAddRecoreModal.value = true;
+  revoke.value = true;
 };
 
 const classInfos = ref([]);
@@ -138,7 +146,8 @@ const onSearch = (data) => {
       <SearchForm @search="onSearch"></SearchForm>
       <div class="operation">
         <a-button type="primary" @click="showModal">添加成绩</a-button>
-        <a-button class="export-btn" type="primary" @click="exportData">导出成绩</a-button>
+        <a-button class="btn" type="primary" @click="showRevokeModal">撤销成绩</a-button>
+        <a-button class="btn" type="primary" @click="exportData">导出成绩</a-button>
       </div>
     </div>
     <AddRecoreModal
@@ -147,6 +156,7 @@ const onSearch = (data) => {
       @record-add-success="getPageRecords"
       :classes="classInfos"
       :rounds="PROJECT_ROUND"
+      :revoke="revoke"
     >
     </AddRecoreModal>
     <a-table
@@ -182,7 +192,7 @@ const onSearch = (data) => {
     right: 0;
     margin-bottom: 10px;
 
-    .export-btn {
+    .btn {
       margin-left: 10px;
     }
   }

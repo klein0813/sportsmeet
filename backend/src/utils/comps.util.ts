@@ -23,8 +23,7 @@ export default class CopmsUtil {
     }
   }
 
-  static getDateYM() {
-    const date = new Date();
+  static getDateYM(date = new Date()) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
 

@@ -1,9 +1,9 @@
 <script setup>
-import { reactive, ref, computed, toRaw } from 'vue';
+import { reactive, ref, computed, watchEffect, toRaw } from 'vue';
 import { Form } from 'ant-design-vue';
 import { getAthletesByKeyword, getProjects } from '@/api';
 import { GENDER_MAPPING, EVENT_RECORE_ADD, GRADE_MAPPDING, GROUP_LEVEL_MAPPING } from '@/utils/constant';
-const props = defineProps(['projects', 'rounds', 'classes']);
+const props = defineProps(['rounds', 'classes', 'revoke']);
 const emits = defineEmits([EVENT_RECORE_ADD]);
 let addedAthletes = ref([]);
 
@@ -20,6 +20,31 @@ let curAthlete = undefined;
 const athletes = ref([]);
 const scls = ref([]);
 const projectReadonly = ref(false);
+const idRule = [
+  {
+    required: true,
+    message: '请选择运动员',
+  },
+];
+const levelRule = [
+  {
+    required: true,
+    message: '请输入成绩',
+  },
+  {
+    validator: (rule, value) => {
+      // value 是当前字段的值
+      if (!value) {
+        return Promise.resolve()
+      }
+      const num = Number(value)
+      if (isNaN(num) || !Number.isInteger(num) || num < 1) {
+        return Promise.reject('成绩必须是大于0的整数')
+      }
+      return Promise.resolve()
+    },
+  },
+];
 const rulesRef = reactive({
   grade: [
     {
@@ -39,50 +64,15 @@ const rulesRef = reactive({
       message: '请选择轮次',
     },
   ],
-  id: [
-    {
-      required: true,
-      message: '请选择运动员',
-    },
-  ],
-  level: [
-    {
-      required: true,
-      message: '请输入成绩',
-    },
-    {
-      validator: (rule, value) => {
-        // value 是当前字段的值
-        if (!value) {
-          return Promise.resolve()
-        }
-        const num = Number(value)
-        if (isNaN(num) || !Number.isInteger(num) || num < 1) {
-          return Promise.reject('成绩必须是大于0的整数')
-        }
-        return Promise.resolve()
-      },
-    },
-  ],
+  id: idRule,
+  level: levelRule,
 });
 const { resetFields, validate, validateInfos } = useForm(modelRef, rulesRef);
 
 const projectOptions = ref([]);
 
 const handleGradeChange = (val) => {
-  getProjects(0, val).then((res) => {
-    projectOptions.value = res.data.map((item) => {
-      const showName = GROUP_LEVEL_MAPPING[item.name];
-      return {
-        value: item._id,
-        label: item.group < 2 ? `${showName} (${GENDER_MAPPING[item.group]})` : showName,
-        id: item._id,
-        category: item.category,
-        name: item.name,
-        group: item.group,
-      }
-    });
-  });
+  getPageProjects(props.revoke ? undefined : 0, val);
 }
 
 const handleProjectChange = (val) => {
@@ -142,7 +132,9 @@ const onSubmit = () => {
   validate()
     .then(() => {
       const data = toRaw(modelRef);
-      data.level = data.level.replace(/^0+/, '');
+      if (!props.revoke) {
+        data.level = data.level.replace(/^0+/, '');
+      }
       emits(EVENT_RECORE_ADD, { data, athlete: curAthlete, project: toRaw(curProject.value) });
       projectReadonly.value = true
       addedAthletes.value.push(data.id);
@@ -161,6 +153,32 @@ function reset() {
   scls.value = [];
 }
 
+watchEffect(() => {
+  if (props.revoke) {
+    delete rulesRef.id;
+    delete rulesRef.level;
+  } else {
+    rulesRef.id = idRule;
+    rulesRef.level = levelRule;
+  }
+});
+
+function getPageProjects(status, grade) {
+  getProjects(status, grade).then((res) => {
+    projectOptions.value = res.data.map((item) => {
+      const showName = GROUP_LEVEL_MAPPING[item.name];
+      return {
+        value: item._id,
+        label: item.group < 2 ? `${showName} (${GENDER_MAPPING[item.group]})` : showName,
+        id: item._id,
+        category: item.category,
+        name: item.name,
+        group: item.group,
+      }
+    });
+  });
+}
+
 defineExpose({
   reset,
 })
@@ -176,7 +194,7 @@ defineExpose({
     <a-form-item class="form-item" label="轮次" v-bind="validateInfos.round">
       <a-select placeholder="选择轮次" v-model:value="modelRef.round" :disabled="projectReadonly" :options="props.rounds"></a-select>
     </a-form-item>
-    <a-form-item class="form-item" label="运动员" v-bind="validateInfos.id">
+    <a-form-item class="form-item" label="运动员" v-show="!props.revoke" v-bind="validateInfos.id">
       <a-select
         v-model:value="modelRef.id"
         show-search
@@ -191,11 +209,11 @@ defineExpose({
         @change="handleChange"
       ></a-select>
     </a-form-item>
-    <a-form-item class="form-item" label="成绩" v-bind="validateInfos.level">
+    <a-form-item class="form-item" label="成绩" v-show="!props.revoke" v-bind="validateInfos.level">
       <a-input v-model:value="modelRef.level" placeholder="每个单位级两位数字"></a-input>
     </a-form-item>
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" @click.prevent="onSubmit">添加</a-button>
+      <a-button type="primary" @click.prevent="onSubmit">{{ props.revoke ? '查找' : '添加' }}</a-button>
     </a-form-item>
   </a-form>
 </template>

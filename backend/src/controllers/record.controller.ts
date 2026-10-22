@@ -25,11 +25,13 @@ import {
   API_FLASH_COUNT,
   API_EXPORT_FLASH_RECORD_DATA,
   GROUP_LEVEL_MAPPING,
+  API_REVOKE,
 } from 'src/utils/constants';
 import CopmsUtil from 'src/utils/comps.util';
 import * as ExcelJS from 'exceljs';
 import { Readable } from 'stream';
 import * as contentDisposition from 'content-disposition';
+import { isValidObjectId } from 'mongoose';
 
 @Controller(API_RECORD)
 export class RecordController {
@@ -72,13 +74,42 @@ export class RecordController {
   }
 
   @Get(API_FIND)
-  findByName(@Query() query: any) {
-    return this.recordService.findByName(query.name);
+  findProjectRecord(@Query() query: any) {
+    const { projectId, grade, round } = query;
+    if (
+      isValidObjectId(projectId) &&
+      GRADE_MAPPING[grade] &&
+      STR_ROUNDS.includes(round)
+    ) {
+      return this.recordService.findProjectRecord(
+        projectId,
+        Number.parseInt(grade),
+        Number.parseInt(round),
+      );
+    }
+    return [];
   }
 
   @Post(API_BATCH)
   batchInsert(@Body() body: any) {
     return this.recordService.batchInsert(body.data);
+  }
+
+  @Post(API_REVOKE)
+  revokeProjectRecore(@Body() body: any) {
+    const { projectId, grade, round } = body;
+    if (
+      isValidObjectId(projectId) &&
+      GRADE_MAPPING[grade] &&
+      STR_ROUNDS.includes(`${round}`)
+    ) {
+      return this.recordService.revokeProjectAndRecalculate(
+        projectId,
+        Number.parseInt(grade),
+        Number.parseInt(round),
+      );
+    }
+    return false;
   }
 
   @Get(API_GET_TOP)

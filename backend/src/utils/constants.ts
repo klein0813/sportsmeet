@@ -13,6 +13,7 @@ export const API_SID = 'sid';
 export const API_RECORD = 'record';
 export const API_GET_TOP = 'get-top';
 export const API_FLASH_COUNT = 'get-flash-count';
+export const API_REVOKE = 'revoke';
 export const API_SCLASS = 'sclass';
 export const API_GRADE_TOP_THREE = 'grade-top3';
 export const API_EXPORT_PROJECT_RECORD_DATA = 'exproda';

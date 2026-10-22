@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model, Connection } from 'mongoose';
 import { RecordDocument } from 'src/schemas/record.schema';
 import { ProjectDocument } from 'src/schemas/project.schema';
 import { AthleteDocument } from 'src/schemas/athlete.schema';
@@ -23,6 +23,7 @@ export class RecordService {
     @InjectModel('Project') private projectModel: Model<ProjectDocument>,
     @InjectModel('Athlete') private athleteModel: Model<AthleteDocument>,
     @InjectModel('Sclass') private sclassModel: Model<SclassDocument>,
+    @InjectConnection() private readonly connection: Connection, // 注入连接以开启事务
   ) {}
 
   // private readonly user: User = {
@@ -258,6 +259,164 @@ export class RecordService {
       ganderTop,
       classTop,
     };
+  }
+
+  findProjectRecord(tprojectId: string, athleteGrade: number, round: number) {
+    const projectId = new mongoose.Types.ObjectId(tprojectId);
+    return this.recordModel.find({ projectId, athleteGrade, round });
+  }
+
+  async revokeProjectAndRecalculate(
+    tprojectId: string,
+    athleteGrade: number,
+    round: number,
+  ) {
+    const projectId = new mongoose.Types.ObjectId(tprojectId);
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      // 1、根据 projectId 和 athleteGrade 查找并删除 Record，返回删除的记录列表
+      const deletedRecords = await this.recordModel
+        .find({ projectId, athleteGrade, round })
+        .session(session);
+      if (deletedRecords.length === 0) return false;
+      await this.recordModel
+        .deleteMany({ projectId, athleteGrade, round })
+        .session(session);
+      if (round === 1) {
+        // 预赛，删除记录即可
+        await session.commitTransaction();
+        await session.endSession();
+        return true;
+      }
+
+      // 2、更新 Project 表。将对应年级的 gradeXDone 设为 false
+      const updateField = `grade${athleteGrade}Done`;
+      const project = await this.projectModel
+        .findById(projectId)
+        .session(session);
+      if (!project) return false;
+      project[updateField] = false;
+      if (project.newRecord) {
+        // 重算 newRecord 和 recordHolder
+        project.newRecord = null;
+        project.recordHolder = PROJECT_DATA[project.name].record[project.group];
+        // 查剩余记录
+        const remainingRecords = await this.recordModel
+          .find({ projectId })
+          .session(session);
+        if (remainingRecords.length > 0) {
+          const isTrack = project.type === 1; // 1代表时间越小越好
+          // 手动排序
+          remainingRecords.sort((a, b) => {
+            const valA = Number(a.level);
+            const valB = Number(b.level);
+            return isTrack ? valA - valB : valB - valA;
+          });
+          const best = remainingRecords[0];
+          if (best.recordBreaking) {
+            project.newRecord = Number(best.level);
+            project.recordHolder = {
+              name: best.athleteName,
+              class: best.athleteClass,
+              flag: best.flag,
+              date: CopmsUtil.getDateYM(best.createdAt || new Date()),
+            };
+          }
+        }
+      }
+      await project.save({ session });
+      // 3、遍历步骤 1 返回的记录，根据 athleteClass 更新 Sclass 表。
+      // (1) rankingCounts.noX -= 1。
+      // (2) score -= record.score。
+      // (3) 重置（清空/重新计算）该班级 projects[projectName] 字段
+      // 先统计每个班级一共被扣了多少分、哪个名次扣了几次
+      const classStatsMap = new Map<
+        string,
+        { scoreToSubtract: number; rankingsToSubtract: number[] }
+      >(); // { "101": { scoreToSubtract: 10, rankingsToSubtract: [1, 2] } }
+      deletedRecords.forEach((record) => {
+        if (!classStatsMap.has(record.athleteClass)) {
+          classStatsMap.set(record.athleteClass, {
+            scoreToSubtract: 0,
+            rankingsToSubtract: [],
+          });
+        }
+        const stats = classStatsMap.get(record.athleteClass);
+        stats.scoreToSubtract += record.score || 0;
+        if (record.score) {
+          if (record.recordBreaking) {
+            stats.scoreToSubtract += REWARD_SCORE[project.category];
+          }
+          stats.rankingsToSubtract.push(record.ranking);
+        }
+      });
+      // 遍历受影响的班级进行扣减和重算操作
+      for (const [className, stats] of classStatsMap.entries()) {
+        const sclass = await this.sclassModel
+          .findOne({ name: className })
+          .session(session);
+
+        if (sclass) {
+          // (2) 扣减总分 (防止出现负数)
+          sclass.score = Math.max(0, sclass.score - stats.scoreToSubtract);
+
+          // (1) 扣减名次统计
+          stats.rankingsToSubtract.forEach((rank) => {
+            if (rank >= 1 && rank <= 6) {
+              const rankKey = `no${rank}` as keyof typeof sclass.rankingCounts;
+              sclass.rankingCounts[rankKey] = Math.max(
+                0,
+                sclass.rankingCounts[rankKey] - 1,
+              );
+            }
+          });
+
+          // 核心修复：重置 projects[projectName]
+          // 查询该班级在【该年级、该项目】下是否还有剩余成绩（解决男女组共用一个名字的问题）
+          const remainingClassRecords = await this.recordModel
+            .find({
+              projectId: projectId,
+              athleteClass: className,
+              round,
+            })
+            .sort({ ranking: 1 })
+            .session(session);
+
+          if (remainingClassRecords.length > 0) {
+            // 如果还有成绩（比如女子组的成绩没被撤销），重新生成积分字符串
+            const remainScores = remainingClassRecords
+              .map((r) => {
+                if (r.recordBreaking) {
+                  return `+${r.score}+${REWARD_SCORE[project.category]}`;
+                }
+                return `+${r.score}`;
+              })
+              .join('');
+            // 覆盖原来的字符串（比如原本是 "+10+8"，撤销男子后变成 "+8"）
+            sclass.projects[project.name] = remainScores;
+          } else {
+            // 如果该班级在这个项目下一个成绩都没了，重置值
+            sclass.projects[project.name] = '';
+          }
+          // 由于 projects 是 Mixed 类型，修改内部对象后必须调用 markModified
+          sclass.markModified('projects');
+
+          await sclass.save({ session });
+        }
+      }
+      await session.commitTransaction();
+    } catch (error) {
+      // 发生任何错误，回滚所有操作
+      console.error('【真正的错误在这里】:', error);
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      throw error;
+    } finally {
+      await session.endSession();
+    }
+    return true;
   }
 
   getFlashCount() {
