@@ -107,7 +107,7 @@ const breadcrumbs = computed(() => {
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
-        Sports Meeting Performance Management ©2026 Created by Klein
+        运动会成绩管理系统 ©2026 Klein
       </a-layout-footer>
     </a-layout>
   </a-layout>

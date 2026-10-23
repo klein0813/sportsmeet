@@ -109,8 +109,23 @@ export class SclassController {
           };
         }
       }
-    }
 
+      worksheet.headerFooter = {
+        // 奇数页页眉（默认所有页）
+        oddHeader: '&L运动会年级积分排名&C第 &P 页，共 &N 页',
+        // 奇数页页脚：左侧版权，右侧打印时间
+        oddFooter:
+          '&L&"微软雅黑"&9运动会成绩管理系统 ©2026 Klein&R&"微软雅黑"&9打印时间：&D &T',
+      };
+      worksheet.protect('yq', {
+        selectLockedCells: true, // 允许用户选中被锁定的单元格（通常设为 true，方便查看）
+        selectUnlockedCells: true, // 允许用户选中未锁定的单元格
+        formatCells: false, // 禁止修改单元格格式
+        insertRows: false, // 禁止插入行
+        deleteRows: false, // 禁止删除行
+        sort: false, // 禁止排序
+      });
+    }
     // 设置表头行（假设是第一行）
     // const headerRow = worksheet.getRow(1);
     // headerRow.eachCell((cell) => {

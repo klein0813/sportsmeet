@@ -1,6 +1,10 @@
 <script setup>
 import { reactive, toRaw } from 'vue';
-import { GROUP_LEVEL_MAPPING, GENDER_MAPPING, EVENT_RECORE_SEARCN } from '@/utils/constant';
+import {
+  GROUP_LEVEL_MAPPING,
+  // GENDER_MAPPING,
+  EVENT_RECORE_SEARCN,
+} from '@/utils/constant';
 
 const emits = defineEmits([EVENT_RECORE_SEARCN]);
 const formState = reactive({
@@ -27,7 +31,7 @@ const onReset = () => {
 }
 
 const projectOptions = Object.entries(GROUP_LEVEL_MAPPING).map(([k, v]) => ({ label: v, value: k }));
-const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v, value: k }));
+// const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v, value: k }));
 
 </script>
 <template>
@@ -38,9 +42,9 @@ const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v,
     <a-form-item class="form-item" label="项目">
       <a-select v-model:value="formState.projectName" :options="projectOptions" placeholder="项目"></a-select>
     </a-form-item>
-    <a-form-item class="form-item" label="组别">
+    <!-- <a-form-item class="form-item" label="组别">
       <a-select v-model:value="formState.group" :options="groupOptions" placeholder="组别"></a-select>
-    </a-form-item>
+    </a-form-item> -->
     <!-- <a-form-item class="form-item" label="轮次">
       <a-select v-model:value="formState.round" :options="PROJECT_ROUND" placeholder="轮次"></a-select>
     </a-form-item> -->
@@ -61,7 +65,6 @@ const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v,
         type="primary"
         @click.prevent="onSubmit"
       >
-      <!-- :loading="iconLoading" -->
         搜索
       </a-button>
       <a-button
@@ -69,7 +72,6 @@ const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v,
         type="primary"
         @click.prevent="onReset"
       >
-      <!-- :loading="iconLoading" -->
         重置
       </a-button>
     </a-form-item>

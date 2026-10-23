@@ -103,7 +103,7 @@ const handlePrint = () => {
         </div>
 
         <!-- 底部版权 -->
-        <div class="print-footer">Sports Meeting Performance Management ©2026 Created by Klein</div>
+        <div class="print-footer">运动会成绩管理系统 ©2026 Klein</div>
       </body>
     </html>
   `);

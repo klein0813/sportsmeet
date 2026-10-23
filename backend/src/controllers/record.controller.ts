@@ -176,7 +176,7 @@ export class RecordController {
 
     // 设置列宽
     worksheet.columns.forEach((column) => {
-      column.width = 12.5;
+      column.width = 10;
     });
     // 设置行高
     worksheet.eachRow({ includeEmpty: false }, (row) => {
@@ -207,6 +207,22 @@ export class RecordController {
       }
     }
 
+    worksheet.headerFooter = {
+      // 奇数页页眉（默认所有页）
+      oddHeader: '&L运动会项目数据&C第 &P 页，共 &N 页',
+      // 奇数页页脚：左侧版权，右侧打印时间
+      oddFooter:
+        '&L&"微软雅黑"&9运动会成绩管理系统 ©2026 Klein&R&"微软雅黑"&9打印时间：&D &T',
+    };
+    worksheet.protect('yq', {
+      selectLockedCells: true, // 允许用户选中被锁定的单元格（通常设为 true，方便查看）
+      selectUnlockedCells: true, // 允许用户选中未锁定的单元格
+      formatCells: false, // 禁止修改单元格格式
+      insertRows: false, // 禁止插入行
+      deleteRows: false, // 禁止删除行
+      sort: false, // 禁止排序
+    });
+
     // 生成 Buffer
     const buffer = await workbook.xlsx.writeBuffer();
 
@@ -225,7 +241,7 @@ export class RecordController {
   )
   @Header(
     'Content-Disposition',
-    `attachment; filename=${contentDisposition('运动会破纪录数据.xlsx')}`,
+    `attachment; filename=${contentDisposition('运动会纪录刷新数据.xlsx')}`,
   )
   async downloadFlashRecordExcel(): Promise<StreamableFile> {
     const workbook = new ExcelJS.Workbook();
@@ -268,7 +284,7 @@ export class RecordController {
 
     // 设置列宽
     worksheet.columns.forEach((column) => {
-      column.width = 11;
+      column.width = 11.2;
     });
     // 设置行高
     worksheet.eachRow({ includeEmpty: false }, (row) => {
@@ -302,6 +318,21 @@ export class RecordController {
       }
     }
 
+    worksheet.headerFooter = {
+      // 奇数页页眉（默认所有页）
+      oddHeader: '&L运动会纪录刷新数据&C第 &P 页，共 &N 页',
+      // 奇数页页脚：左侧版权，右侧打印时间
+      oddFooter:
+        '&L&"微软雅黑"&9运动会成绩管理系统 ©2026 Klein&R&"微软雅黑"&9打印时间：&D &T',
+    };
+    worksheet.protect('yq', {
+      selectLockedCells: true, // 允许用户选中被锁定的单元格（通常设为 true，方便查看）
+      selectUnlockedCells: true, // 允许用户选中未锁定的单元格
+      formatCells: false, // 禁止修改单元格格式
+      insertRows: false, // 禁止插入行
+      deleteRows: false, // 禁止删除行
+      sort: false, // 禁止排序
+    });
     // 生成 Buffer
     const buffer = await workbook.xlsx.writeBuffer();
 
