@@ -27,6 +27,10 @@ export const GROUP_LEVEL_MAPPING = {
   ropeJump: '跳绳',
   '4X100M': '4*100米',
   '30×50MRelay': '30*50接力',
+  badminton: '羽毛球',
+  badmintonMixed: '羽毛球混双',
+  tableTennis: '乒乓球',
+  tableTennisMixed: '乒乓球混双',
 };
 export const SHOW_TOP = 6;
 export const GENDER_MAPPING = {
@@ -80,4 +84,8 @@ export const LEVEL_TYPE_MAPPING = {
   ropeJump: 3,
   '4X100M': 0,
   '30×50MRelay': 0,
+  badminton: 2,
+  badmintonMixed: 2,
+  tableTennis: 2,
+  tableTennisMixed: 2,
 }

@@ -37,7 +37,7 @@ const handlePrint = () => {
         <title>打印</title>
         <style>
           @page { 
-            size: A4 ${props.orientation}; 
+            size: auto ${props.orientation}; 
             margin: ${props.margin}; 
           }
           

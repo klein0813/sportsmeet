@@ -82,18 +82,23 @@ export class RecordService {
       if (projectData.category === 2) {
         projects.push({ ...project, record: projectData.record, group: 2 });
       } else {
-        projects.push({
-          ...project,
-          record: projectData.record[0].v,
-          recordHolder: projectData.record[0],
-          group: 0,
-        });
-        projects.push({
-          ...project,
-          record: projectData.record[1].v,
-          recordHolder: projectData.record[1],
-          group: 1,
-        });
+        if (Array.isArray(projectData.record)) {
+          projects.push({
+            ...project,
+            record: projectData.record[0].v,
+            recordHolder: projectData.record[0],
+            group: 0,
+          });
+          projects.push({
+            ...project,
+            record: projectData.record[1].v,
+            recordHolder: projectData.record[1],
+            group: 1,
+          });
+        } else {
+          projects.push({ ...project, group: 0 });
+          projects.push({ ...project, group: 1 });
+        }
       }
       projectsObj[item] = '';
     });
