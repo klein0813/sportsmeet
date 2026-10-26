@@ -161,9 +161,9 @@ export async function addRecords(data) {
   }
 }
 
-export async function getAthletes() {
+export async function getAthletes(q = {}) {
   try {
-    return instance.get('/athlete');
+    return instance.get('/athlete', { params: { ...q }});
   } catch (error) {
     console.error(error);
   }

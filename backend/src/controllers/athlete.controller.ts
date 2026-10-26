@@ -29,6 +29,15 @@ export class AthleteController {
     if (query?.keyword) {
       return this.athleteService.findByKeyword(query.keyword, q);
     }
+    if (query?.name) {
+      q['name'] = query.name;
+    }
+    if (query?.class) {
+      q['name'] = query.class;
+    }
+    if (query?.sid) {
+      q['name'] = query.sid;
+    }
     return this.athleteService.get(q);
   }
 
