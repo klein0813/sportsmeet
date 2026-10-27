@@ -7,5 +7,4 @@ import { RouterView } from 'vue-router'
 </template>
 
 <style lang="less" scoped>
-  @import url('./assets/fonts/index.css');
 </style>

@@ -1,11 +1,22 @@
 <script setup>
 import { ref, toRaw, h } from 'vue';
 import { Tag } from 'ant-design-vue'
+import { useRoute } from 'vue-router'
 import { getRecords, getSclasses, exportRecord } from '@/api';
 import { levelNumber2String } from '@/utils/common';
 import AddRecoreModal from './AddRecoreModal.vue';
-import { GROUP_LEVEL_MAPPING, PROJECT_ROUND, PROJECT_ROUND_MAPPING, GRADE_MAPPDING, GENDER_MAPPING } from '@/utils/constant'
+import {
+  GROUP_LEVEL_MAPPING, 
+  PROJECT_ROUND,
+  PROJECT_ROUND_MAPPING,
+  GRADE_MAPPDING,
+  GENDER_MAPPING,
+  KEY_F9816,
+} from '@/utils/constant'
 import SearchForm from './SearchForm.vue';
+
+const route = useRoute();
+const canDo = route.query.key === KEY_F9816;
 
 const pagination = ref({
   current: 1,
@@ -145,8 +156,8 @@ const onSearch = (data) => {
     <div class="header">
       <SearchForm @search="onSearch"></SearchForm>
       <div class="operation">
-        <a-button type="primary" @click="showModal">添加成绩</a-button>
-        <a-button class="btn" type="primary" @click="showRevokeModal">撤销成绩</a-button>
+        <a-button v-if="canDo" type="primary" @click="showModal">添加成绩</a-button>
+        <a-button v-if="canDo" class="btn" type="primary" @click="showRevokeModal">撤销成绩</a-button>
         <a-button class="btn" type="primary" @click="exportData">导出成绩</a-button>
       </div>
     </div>

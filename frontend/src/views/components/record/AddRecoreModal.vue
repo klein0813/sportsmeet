@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, toRaw } from 'vue';
+import { useRoute } from 'vue-router'
 import { addRecords, getProjectRecords, revokeProjectRecords } from '@/api';
 import { levelNumber2String } from '@/utils/common';
 import RecordForm from './RecordForm.vue';
@@ -11,11 +12,12 @@ import {
   PROJECT_ROUND_MAPPING,
   EVENT_RECORE_ADD_SUCCESS,
 } from '@/utils/constant';
+const route = useRoute();
+const flag =  route.params.id
 
 const props = defineProps(['show', 'rounds', 'classes', 'revoke']);
 const recordFormRef = ref(null)
 const records = ref([]);
-const flag = '2026';
 const open = ref(false)
 const loadingAddBtn = ref(false);
 
