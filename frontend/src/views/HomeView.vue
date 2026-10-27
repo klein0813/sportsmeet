@@ -46,7 +46,7 @@ const breadcrumbs = computed(() => {
 <template>
   <a-layout style="min-height: 100vh">
     <a-layout-sider v-model:collapsed="collapsed" collapsible>
-      <div class="logo">{{ collapsed ? 'SMPM' : '运动会成绩管理系统' }}</div>
+      <div class="logo"><img width="32" height="32" src="../../src/assets/logo.png" />{{ collapsed ? '' : '运动会成绩管理系统' }}</div>
       <a-menu theme="dark" v-model:selectedKeys="selectedKeys" mode="inline">
         <a-sub-menu key="overview">
           <template #title>
@@ -114,6 +114,9 @@ const breadcrumbs = computed(() => {
 </template>
 <style>
 .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 32px;
   margin: 16px;
   text-align: center;
