@@ -49,22 +49,6 @@ const columns = [
     customRender: ({ text }) => text?.split(' ')[0],
   },
   {
-    title: '羽毛球',
-    dataIndex: 'badminton',
-  },
-  {
-    title: '羽毛球混双',
-    dataIndex: 'badmintonMixed',
-  },
-  {
-    title: '乒乓球',
-    dataIndex: 'tableTennis',
-  },
-  {
-    title: '乒乓球混双',
-    dataIndex: 'tableTennisMixed',
-  },
-  {
     title: '拔河',
     dataIndex: 'tugOfWar',
   },

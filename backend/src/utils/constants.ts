@@ -72,10 +72,6 @@ export const PROJECTS = [
   'ropeJump',
   '4X100M',
   '30×50MRelay',
-  'badminton',
-  'badmintonMixed',
-  'tableTennis',
-  'tableTennisMixed',
   // 'overallScore',
   // 'ranking',
 ];
@@ -169,26 +165,6 @@ export const PROJECT_DATA = {
     category: 2,
     record: -1,
   },
-  badminton: {
-    type: 1,
-    category: 1,
-    record: -1,
-  },
-  badmintonMixed: {
-    type: 1,
-    category: 2,
-    record: -1,
-  },
-  tableTennis: {
-    type: 1,
-    category: 1,
-    record: -1,
-  },
-  tableTennisMixed: {
-    type: 1,
-    category: 2,
-    record: -1,
-  },
 };
 export const GROUP_LEVEL_MAPPING = {
   '100M': '100米',
@@ -203,10 +179,6 @@ export const GROUP_LEVEL_MAPPING = {
   ropeJump: '跳绳',
   '4X100M': '4*100米',
   '30×50MRelay': '30*50接力',
-  badminton: '羽毛球',
-  badmintonMixed: '羽毛球混双',
-  tableTennis: '乒乓球',
-  tableTennisMixed: '乒乓球混双',
   overallScore: '总分',
   ranking: '排名',
 };
@@ -221,10 +193,6 @@ export const PROJECT_NAME_MAPPING = {
   铅球: 'shotPut',
   拔河: 'tugOfWar',
   跳绳: 'ropeJump',
-  羽毛球: 'badminton',
-  羽毛球混双: 'badmintonMixed',
-  乒乓球: 'tableTennis',
-  乒乓球混双: 'tableTennisMixed',
 };
 export const LEVEL_TYPE_MAPPING = {
   // 0，时间；1，距离、高度；2，名次；3，个数
@@ -240,10 +208,6 @@ export const LEVEL_TYPE_MAPPING = {
   ropeJump: 3,
   '4X100M': 0,
   '30×50MRelay': 0,
-  badminton: 2,
-  badmintonMixed: 2,
-  tableTennis: 2,
-  tableTennisMixed: 2,
 };
 export const SCLASS = {
   1: [

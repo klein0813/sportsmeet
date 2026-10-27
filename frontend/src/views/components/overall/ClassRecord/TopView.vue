@@ -122,32 +122,6 @@ const columns = [
     customCell: handerCustomCell,
   },
   {
-    title: '羽毛球',
-    dataIndex: 'badminton',
-    customRender: ({ text, column: { dataIndex } }) => {
-      // 如果你的 formatRecord 返回的是 \n
-      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
-    },
-  },
-  {
-    title: '羽毛球混双',
-    dataIndex: 'ropeJump',
-    customCell: handerCustomCell,
-  },
-  {
-    title: '乒乓球',
-    dataIndex: 'tableTennis',
-    customRender: ({ text, column: { dataIndex } }) => {
-      // 如果你的 formatRecord 返回的是 \n
-      return h('div', { style: { whiteSpace: 'pre-wrap' } }, formatRecord(dataIndex, text));
-    },
-  },
-  {
-    title: '乒乓球混双',
-    dataIndex: 'tableTennisMixed',
-    customCell: handerCustomCell,
-  },
-  {
     title: '30*50接力',
     dataIndex: '30×50MRelay',
     customCell: handerCustomCell,
