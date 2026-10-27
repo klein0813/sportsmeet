@@ -12,6 +12,7 @@ import {
   PROJECT_NAME_MAPPING,
   GENDER_KV_MAPPING,
 } from 'src/utils/constants';
+import * as path from 'path';
 
 @Controller(API_ATHLETE)
 export class AthleteController {
@@ -66,7 +67,8 @@ export class AthleteController {
   @Get('init')
   async init() {
     const workbook = new Excel.Workbook();
-    await workbook.xlsx.readFile('src/utils/报名表.xlsx');
+    const filePath = path.resolve(process.cwd(), 'assets', '报名表.xlsx');
+    await workbook.xlsx.readFile(filePath);
     const worksheet = workbook.getWorksheet(1);
 
     const athletes = {};
