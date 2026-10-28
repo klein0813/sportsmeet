@@ -52,6 +52,7 @@ const handleOk = () => {
       return {
         athleteId: item.id,
         level: item.level,
+        worse: item.worse,
       }
     })
   };
@@ -100,6 +101,7 @@ const addRecord = ({ data, athlete, project }) => {
       class: project.category ? athlete.name : athlete.class,
       name: project.category ? '' : athlete.name,
       level: data.level,
+      worse: data.worse,
     });
   }
 };
@@ -160,7 +162,7 @@ const columns = ref([
     title: '成绩',
     dataIndex: 'level',
     key: 'level',
-    customRender: ({ text, record }) => levelNumber2String(record.projectName, text),
+    customRender: ({ text, record }) => `${levelNumber2String(record.projectName, text)}${record.worse ? '↓' : ''}`,
   },
 ]);
 </script>

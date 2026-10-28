@@ -136,7 +136,7 @@ function getPageRecords(cpagination={ current: 1, pageSize: 10 }, query={}) {
         grade: GRADE_MAPPDING[item.athleteGrade],
         level: item.level,
         ranking: item.ranking,
-        score: item.score,
+        score: item.score ? `${item.score}${item.recordBreaking ? '+10' : ''}` : '',
         recordBreaking: item.recordBreaking,
       }
     });

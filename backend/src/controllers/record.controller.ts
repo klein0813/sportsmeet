@@ -56,6 +56,9 @@ export class RecordController {
     if (STR_ROUNDS.includes(query.round)) {
       q['round'] = Number.parseInt(query.round);
     }
+    if (GRADE_MAPPING[query.grade]) {
+      q['athleteGrade'] = Number.parseInt(query.grade);
+    }
     if (query.class && !isNaN(Number(query.class))) {
       q['athleteClass'] = query.class;
     }

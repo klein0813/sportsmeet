@@ -2,8 +2,10 @@
 import { reactive, toRaw } from 'vue';
 import {
   GROUP_LEVEL_MAPPING,
-  // GENDER_MAPPING,
+  PROJECT_ROUND,
+  GENDER_MAPPING,
   EVENT_RECORE_SEARCN,
+  GRADE_MAPPDING,
 } from '@/utils/constant';
 
 const emits = defineEmits([EVENT_RECORE_SEARCN]);
@@ -12,6 +14,7 @@ const formState = reactive({
   group: undefined,
   round: undefined,
   class: undefined,
+  grade: undefined,
   sid: undefined,
   recordBreaking: undefined,
 });
@@ -24,6 +27,7 @@ const onReset = () => {
   formState.projectName = undefined;
   formState.group = undefined;
   formState.round = undefined;
+  formState.grade = undefined;
   formState.class = undefined;
   formState.sid = undefined;
   formState.recordBreaking = undefined;
@@ -31,7 +35,8 @@ const onReset = () => {
 }
 
 const projectOptions = Object.entries(GROUP_LEVEL_MAPPING).map(([k, v]) => ({ label: v, value: k }));
-// const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v, value: k }));
+const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v, value: k }));
+const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v, value: k }));
 
 </script>
 <template>
@@ -42,18 +47,21 @@ const projectOptions = Object.entries(GROUP_LEVEL_MAPPING).map(([k, v]) => ({ la
     <a-form-item class="form-item" label="项目">
       <a-select v-model:value="formState.projectName" :options="projectOptions" placeholder="项目"></a-select>
     </a-form-item>
-    <!-- <a-form-item class="form-item" label="组别">
+    <a-form-item class="form-item" label="组别">
       <a-select v-model:value="formState.group" :options="groupOptions" placeholder="组别"></a-select>
-    </a-form-item> -->
-    <!-- <a-form-item class="form-item" label="轮次">
+    </a-form-item>
+    <a-form-item class="form-item" label="轮次">
       <a-select v-model:value="formState.round" :options="PROJECT_ROUND" placeholder="轮次"></a-select>
-    </a-form-item> -->
-    <a-form-item class="form-item" label="班级">
+    </a-form-item>
+    <a-form-item class="form-item" label="年级">
+      <a-select v-model:value="formState.grade" :options="gradeOptions" placeholder="年级"></a-select>
+    </a-form-item>
+    <!-- <a-form-item class="form-item" label="班级">
       <a-input v-model:value="formState.class" style="width: 100px" placeholder="班级"></a-input>
-    </a-form-item>
-    <a-form-item class="form-item" label="号码">
+    </a-form-item> -->
+    <!-- <a-form-item class="form-item" label="号码">
       <a-input v-model:value="formState.sid" style="width: 100px" placeholder="号码"></a-input>
-    </a-form-item>
+    </a-form-item> -->
     <a-form-item class="form-item" label="破记录">
       <a-select v-model:value="formState.recordBreaking" placeholder="破记录">
         <a-select-option value="1">是</a-select-option>

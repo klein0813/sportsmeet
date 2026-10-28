@@ -138,9 +138,14 @@ export class RecordService {
       };
       // 成绩按规则排序：type： 0, 成绩数值越大越好，1，成绩数值越小越好
       datas.records.sort((a, b) => {
-        const alevel = Number.parseInt(a.level);
-        const blevel = Number.parseInt(b.level);
-        return project.type === 1 ? alevel - blevel : blevel - alevel;
+        if (project.type === 1) {
+          const alevel = Number.parseInt(a.level) - (a.worse ? -0.5 : 0);
+          const blevel = Number.parseInt(b.level) - (b.worse ? -0.5 : 0);
+          return alevel - blevel;
+        }
+        const alevel = Number.parseInt(a.level) + (a.worse ? -0.5 : 0);
+        const blevel = Number.parseInt(b.level) + (b.worse ? -0.5 : 0);
+        return blevel - alevel;
       });
       const updateSclass = {};
       let lastLevel = '-99';
@@ -164,7 +169,7 @@ export class RecordService {
           res['orignRecord'] = project.record;
         }
         // 成绩并列，排名相同，下一名次跳过
-        if (lastLevel == record.level) {
+        if (lastLevel == record.level && record.worse != true) {
           res['ranking'] = lastRanking;
         } else {
           res['ranking'] = index + 1;
