@@ -33,15 +33,19 @@ export class RecordService {
 
   async get(page: number, size: number, q: any) {
     // return this.recordModel.find({ isDeleted: false });
+    let sort: { [key: string]: 1 | -1 } = { createdAt: -1 };
+    if (q.ranking) {
+      sort = {
+        projectName: -1,
+        projectGroup: -1,
+        round: -1,
+        athleteGrade: -1,
+        ranking: 1,
+      };
+    }
     const skip = (page - 1) * size;
     const [list, total] = await Promise.all([
-      this.recordModel
-        .find(q)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(size)
-        .lean()
-        .exec(),
+      this.recordModel.find(q).sort(sort).skip(skip).limit(size).lean().exec(),
       this.recordModel.countDocuments(q),
     ]);
     return {
@@ -465,6 +469,7 @@ export class RecordService {
         $match: {
           athleteGrade: grade,
           projectGroup: { $in: [0, 1] },
+          round: { $in: [2, 3] },
           ranking: { $lte: top },
         },
       },
@@ -534,6 +539,7 @@ export class RecordService {
         $match: {
           athleteGrade: grade,
           projectGroup: 2,
+          round: { $in: [2, 3] },
           ranking: { $lte: top },
         },
       },

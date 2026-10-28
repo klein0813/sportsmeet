@@ -156,9 +156,9 @@ const onSearch = (data) => {
     <div class="header">
       <SearchForm @search="onSearch"></SearchForm>
       <div class="operation">
-        <a-button v-if="canDo" type="primary" @click="showModal">添加成绩</a-button>
-        <a-button v-if="canDo" class="btn" type="primary" @click="showRevokeModal">撤销成绩</a-button>
-        <a-button class="btn" type="primary" @click="exportData">导出成绩</a-button>
+        <a-button v-if="canDo" class="btn" type="primary" @click="showModal">添加</a-button>
+        <a-button v-if="canDo" class="btn" type="primary" @click="showRevokeModal">撤销</a-button>
+        <a-button class="btn" type="primary" @click="exportData">导出</a-button>
       </div>
     </div>
     <AddRecoreModal
@@ -194,17 +194,17 @@ const onSearch = (data) => {
   position: relative;
 
   .header {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 10px;
   }
 
   .operation {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
 
     .btn {
-      margin-left: 10px;
+      margin-left: 8px;
     }
   }
 }

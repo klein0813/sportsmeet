@@ -62,6 +62,14 @@ export async function createTop3Excel(data) {
         row.getCell(j).border = commonStyle.border;
       }
     }
+
+    worksheet.headerFooter = {
+      // 奇数页页眉（默认所有页）
+      oddHeader: '&L运动会年级积分前三名&C第 &P 页，共 &N 页',
+      // 奇数页页脚：左侧版权，右侧打印时间
+      oddFooter:
+        '&L&"微软雅黑"&9运动会成绩管理系统 ©2026 Klein&R&"微软雅黑"&9打印时间：&D &T',
+    };
   };
 
   const formatData = { grade1:[],grade2:[],grade3:[], }

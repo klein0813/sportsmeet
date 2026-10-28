@@ -93,7 +93,7 @@ export async function getGradeTop3() {
 
 export async function exportClassRanking() {
   try {
-    window.open('/ex/sclass/exrankda')
+    window.open(`http:\\\\${location.hostname}:${PORT}/sclass/exrankda`)
   } catch (error) {
     console.error(error);
   }
@@ -101,7 +101,7 @@ export async function exportClassRanking() {
 
 export async function exportRecord() {
   try {
-    window.open('/ex/record/exproda')
+    window.open(`http:\\\\${location.hostname}:${PORT}/record/exproda`)
   } catch (error) {
     console.error(error);
   }

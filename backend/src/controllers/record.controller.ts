@@ -68,6 +68,9 @@ export class RecordController {
     if (query.recordBreaking && ['0', '1'].includes(query.recordBreaking)) {
       q['recordBreaking'] = query.recordBreaking === '1';
     }
+    if (query.topN && !isNaN(Number(query.topN))) {
+      q['ranking'] = { $lte: Number.parseInt(query.topN) };
+    }
     return this.recordService.get(page, size, q);
   }
 

@@ -15,6 +15,7 @@ const formState = reactive({
   round: undefined,
   class: undefined,
   grade: undefined,
+  topN: undefined,
   sid: undefined,
   recordBreaking: undefined,
 });
@@ -28,6 +29,7 @@ const onReset = () => {
   formState.group = undefined;
   formState.round = undefined;
   formState.grade = undefined;
+  formState.topN = undefined;
   formState.class = undefined;
   formState.sid = undefined;
   formState.recordBreaking = undefined;
@@ -37,6 +39,11 @@ const onReset = () => {
 const projectOptions = Object.entries(GROUP_LEVEL_MAPPING).map(([k, v]) => ({ label: v, value: k }));
 const groupOptions = Object.entries(GENDER_MAPPING).map(([k, v]) => ({ label: v, value: k }));
 const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v, value: k }));
+const topNOptions = [{
+  label: '前三名', value: 3,
+},{
+  label: '前六名', value: 6,
+},];
 
 </script>
 <template>
@@ -56,10 +63,13 @@ const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v,
     <a-form-item class="form-item" label="年级">
       <a-select v-model:value="formState.grade" :options="gradeOptions" placeholder="年级"></a-select>
     </a-form-item>
+    <a-form-item class="form-item" label="名次">
+      <a-select v-model:value="formState.topN" :options="topNOptions" placeholder="前N名"></a-select>
+    </a-form-item>
     <!-- <a-form-item class="form-item" label="班级">
       <a-input v-model:value="formState.class" style="width: 100px" placeholder="班级"></a-input>
-    </a-form-item> -->
-    <!-- <a-form-item class="form-item" label="号码">
+    </a-form-item>
+    <a-form-item class="form-item" label="号码">
       <a-input v-model:value="formState.sid" style="width: 100px" placeholder="号码"></a-input>
     </a-form-item> -->
     <!-- <a-form-item class="form-item" label="破记录">
@@ -90,11 +100,12 @@ const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v,
   flex-flow: initial;
 }
 .reset-btn {
-  margin-left: 10px;
+  margin-left: 8px;
 }
 
 .form-item {
-  width: 140px;
+  width: 130px;
+  margin-bottom: 8px;
   text-align: left;
 }
 </style>

@@ -9,14 +9,7 @@ import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 export default defineConfig({
   server: {
     hmr: true,
-    proxy: {
-      '/ex': {
-        target: 'http://172.16.50.65:31245',
-        changeOrigin: true,
-        // 剔除 /api 前缀，把真正的请求发给后端
-        rewrite: (path) => path.replace(/^\/ex/, '') 
-      }
-    },
+    proxy: {},
   },
   plugins: [
     vue(),
