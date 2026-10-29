@@ -24,7 +24,7 @@ statCompletion().then(({ data: { overall, byGrade, recordCount, newRecordCount }
   flashRecordChartData.value.recordCount = recordCount;
   flashRecordChartData.value.newRecordCount = newRecordCount;
 });
-getFlashCount().then(({ data }) => { flashRecordChartData.value.flashCount = data; })
+getFlashCount().then(({ data }) => { flashRecordChartData.value.flash = data; })
 getGradeTop3().then(({ data }) => { top3ChartData.value = data; })
 </script>
 

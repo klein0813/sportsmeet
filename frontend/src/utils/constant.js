@@ -1,7 +1,7 @@
-export const HOST = 'http://8.162.10.15';
-export const PORT = 59814;
-// export const HOST = 'http://172.16.50.65';
-// export const PORT = 31245;
+// export const HOST = 'http://8.162.10.15';
+// export const PORT = 59814;
+export const HOST = 'http://172.16.50.65';
+export const PORT = 45981;
 
 export const KEY_F9816 = 'f1d45aq'
 

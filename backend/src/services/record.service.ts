@@ -199,6 +199,7 @@ export class RecordService {
           sclass = await this.sclassModel
             .findById(record.athleteId)
             .session(session);
+          res['athleteId'] = sclass._id;
           res['athleteClass'] = sclass.name;
           res['athleteGrade'] = sclass.grade;
           res['athleteName'] = '';
@@ -459,8 +460,33 @@ export class RecordService {
     return true;
   }
 
-  getFlashCount() {
-    return this.recordModel.countDocuments({ recordBreaking: true });
+  async getFlashCount() {
+    const count = await this.recordModel.countDocuments({
+      recordBreaking: true,
+      round: { $in: [2, 3] },
+    });
+    const result = await this.recordModel.aggregate([
+      // 1. 过滤出破纪录的记录
+      { $match: { recordBreaking: true, round: { $in: [2, 3] } } },
+      // 2. 按运动员 ID 分组，把记录塞进一个 Set 里（自动去重）
+      {
+        $group: {
+          _id: null, // 不按特定字段分组，全部汇总
+          uniqueAthletes: { $addToSet: '$athleteId' },
+        },
+      },
+      // 3. 计算去重后的人数
+      {
+        $project: {
+          _id: 0,
+          count: { $size: '$uniqueAthletes' }, // 获取数组长度
+        },
+      },
+    ]);
+    return {
+      count,
+      athleteCount: result[0]?.count || 0,
+    };
   }
 
   private getGanderProjectTop(top: number, grade: number) {

@@ -115,7 +115,7 @@ export async function exportFlashRecord() {
     // document.body.appendChild(link)
     // link.click()
     // document.body.removeChild(link)
-    window.open('/ex/record/exflada')
+    window.open(`http:\\\\${location.hostname}:${PORT}/record/exflada`)
     // return instance.get('/record/exproda');
   } catch (error) {
     console.error(error);

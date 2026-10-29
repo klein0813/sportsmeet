@@ -22,6 +22,16 @@ export async function createTop3Excel(data) {
     }
   };
 
+  // 标题
+  worksheet.mergeCells('A1:F1');
+  worksheet.getCell('A1').value = '崇阳县第二高级中学第五届师生运动会团体总分前三名';
+  worksheet.getCell('A1').font = {
+    size: 14,
+  };
+  worksheet.getRow(1).height = 45;
+  const row = worksheet.getRow(1);
+  row.getCell(1).alignment = commonStyle.alignment;
+
   // ==========================================
   // 2. 封装生成单个年级区块的函数
   // ==========================================
@@ -65,7 +75,7 @@ export async function createTop3Excel(data) {
 
     worksheet.headerFooter = {
       // 奇数页页眉（默认所有页）
-      oddHeader: '&L运动会年级积分前三名&C第 &P 页，共 &N 页',
+      oddHeader: '&C第 &P 页，共 &N 页',
       // 奇数页页脚：左侧版权，右侧打印时间
       oddFooter:
         '&L&"微软雅黑"&9运动会成绩管理系统 ©2026 Klein&R&"微软雅黑"&9打印时间：&D &T',
@@ -85,7 +95,7 @@ export async function createTop3Excel(data) {
 
   // 高一年级 (从第 1 行开始)
   createGradeBlock(
-    1, 
+    2, 
     '高一年级', 
     ['班级', '分数', '班级', '分数', '班级', '分数'], 
     formatData['grade1'],
@@ -93,7 +103,7 @@ export async function createTop3Excel(data) {
 
   // 高二年级 (从第 6 行开始，因为高一占了 1-4 行，第 5 行行高 15)
   createGradeBlock(
-    6, 
+    7, 
     '高二年级', 
     ['班级', '分数', '班级', '分数', '班级', '分数'], 
     formatData['grade2'],
@@ -101,7 +111,7 @@ export async function createTop3Excel(data) {
 
   // 高三年级 (从第 11 行开始，高二占了 6-9 行，第 10 行行高 15)
   createGradeBlock(
-    11, 
+    12, 
     '高三年级', 
     ['班级', '分数', '班级', '分数', '班级', '分数'], 
     formatData['grade3'], // 这里填入高三的数据

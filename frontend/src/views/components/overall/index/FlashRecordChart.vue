@@ -9,6 +9,7 @@ const dataset = {
   source: [
     ['记录项目数', 0],
     ['记录刷新项目数', 0],
+    ['记录刷新人数', 0],
     ['记录刷新人次', 0],
   ]
 };
@@ -36,12 +37,13 @@ function exportAll() {
   exportFlashRecord();
 }
 
-watch(() => props.data, ({ recordCount, newRecordCount, flashCount }) => {
+watch(() => props.data, ({ recordCount, newRecordCount, flash = {} }) => {
   chartOptions.value.dataset = {
     source: [
       ['记录项目数', recordCount[0]?.count || 0],
       ['记录刷新项目数', newRecordCount[0]?.count || 0],
-      ['记录刷新人次', flashCount],
+      ['记录刷新人数', flash.athleteCount || 0],
+      ['记录刷新人次', flash.count],
     ],
   }
   chartRef.value.chart.setOption(chartOptions, true)
