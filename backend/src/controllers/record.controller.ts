@@ -267,6 +267,7 @@ export class RecordController {
     ];
     const q = {
       recordBreaking: true,
+      round: { $in: [2, 3] },
     };
     const records = await this.recordService.getExportFlashData(q);
     records.forEach((record: any) => {
