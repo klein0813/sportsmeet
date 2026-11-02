@@ -14,7 +14,7 @@ const modelRef = reactive({
   round: undefined,
   id: undefined,
   level: undefined,
-  worse: undefined,
+  worse: 0,
 });
 const curProject = ref({});
 let curAthlete = undefined;
@@ -88,6 +88,10 @@ const athleteOptions = computed(() => {
 
 const gradeOptions = Object.entries(GRADE_MAPPDING).map(([k, v]) => ({ label: v, value: k }));
 
+const worseMarks = {
+  0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5 同等成绩值越大排名越低',
+}
+
 const handleSearch = (val) => {
   if (!val) {
     athletes.value = [];
@@ -141,7 +145,7 @@ const onSubmit = () => {
       addedAthletes.value.push(data.id);
       modelRef.id = undefined;
       modelRef.level = undefined;
-      modelRef.worse = undefined;
+      modelRef.worse = 0;
     })
     .catch(err => {
       console.log('error', err);
@@ -214,8 +218,8 @@ defineExpose({
     <a-form-item class="form-item" label="成绩" v-show="!props.revoke" v-bind="validateInfos.level">
       <a-input v-model:value="modelRef.level" placeholder="每个单位级两位数字"></a-input>
     </a-form-item>
-    <a-form-item class="form-item" v-show="!props.revoke">
-      <a-checkbox v-model:checked="modelRef.worse">同等成绩排名更低</a-checkbox>
+    <a-form-item class="form-item" label="系数" v-show="!props.revoke">
+      <a-slider :marks="worseMarks" :min="0" :max="5" :step="1" v-model:value="modelRef.worse" />
     </a-form-item>
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
       <a-button type="primary" @click.prevent="onSubmit">{{ props.revoke ? '查找' : '添加' }}</a-button>

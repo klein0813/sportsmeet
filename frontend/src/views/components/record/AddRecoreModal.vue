@@ -162,7 +162,7 @@ const columns = ref([
     title: '成绩',
     dataIndex: 'level',
     key: 'level',
-    customRender: ({ text, record }) => `${levelNumber2String(record.projectName, text)}${record.worse ? '↓' : ''}`,
+    customRender: ({ text, record }) => `${levelNumber2String(record.projectName, text)}${record.worse ? `↓${record.worse}` : ''}`,
   },
 ]);
 </script>
