@@ -82,9 +82,12 @@ const breadcrumbs = computed(() => {
         运动会成绩管理系统
       </a-layout-header> -->
       <a-layout-content style="margin: 0 16px">
-        <a-breadcrumb style="margin: 16px 0">
-          <a-breadcrumb-item v-for="breadcrumb in breadcrumbs" v-bind:key="breadcrumb">{{ breadcrumb }}</a-breadcrumb-item>
-        </a-breadcrumb>
+        <div style="position: relative; margin: 16px 0">
+          <a-breadcrumb>
+            <a-breadcrumb-item v-for="breadcrumb in breadcrumbs" v-bind:key="breadcrumb">{{ breadcrumb }}</a-breadcrumb-item>
+          </a-breadcrumb>
+          <div class="sm-title">崇阳县第二高级中学第五届师生运动会</div>
+        </div>
         <div class="main-content">
           <template v-if="viewKey == '1'">
             <OverView></OverView>
@@ -145,5 +148,12 @@ const breadcrumbs = computed(() => {
 
 .ant-tag:last-child {
   margin-right: 0 !important;
+}
+
+.sm-title {
+  position: absolute;
+  top: 0;
+  text-align: center;
+  width: 100%;
 }
 </style>
