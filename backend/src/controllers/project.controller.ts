@@ -1,12 +1,19 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  // Body,
+  Controller,
+  Get,
+  // Post,
+  Query,
+} from '@nestjs/common';
 import { ProjectService } from '../services/project.service';
 import {
   API_PROJECT,
   API_COUNT,
   API_FIND,
-  API_BATCH,
-  API_UPDATE_RECORD,
+  // API_BATCH,
+  // API_UPDATE_RECORD,
   API_STAT_COMPLETION,
+  API_SYNC_NEW_RECORD,
 } from 'src/utils/constants';
 
 @Controller(API_PROJECT)
@@ -38,28 +45,33 @@ export class ProjectController {
   //   return this.projectService.findById(params.id);
   // }
 
-  @Post()
-  create(@Body() body: any) {
-    return this.projectService.create(
-      body.name,
-      body.type,
-      body.group,
-      body.record,
-    );
-  }
+  // @Post()
+  // create(@Body() body: any) {
+  //   return this.projectService.create(
+  //     body.name,
+  //     body.type,
+  //     body.group,
+  //     body.record,
+  //   );
+  // }
 
-  @Post(API_BATCH)
-  batchInsert(@Body() body: any) {
-    return this.projectService.batchInsert(body.data);
-  }
+  // @Post(API_BATCH)
+  // batchInsert(@Body() body: any) {
+  //   return this.projectService.batchInsert(body.data);
+  // }
 
-  @Post(API_UPDATE_RECORD)
-  updateRecord(@Body() body: any) {
-    const { id, record } = body;
-    if (!isNaN(Number(record)) && Number.parseInt(record)) {
-      return this.projectService.updateRecord(id, record);
-    }
-    return false;
+  // @Post(API_UPDATE_RECORD)
+  // updateRecord(@Body() body: any) {
+  //   const { id, record } = body;
+  //   if (!isNaN(Number(record)) && Number.parseInt(record)) {
+  //     return this.projectService.updateRecord(id, record);
+  //   }
+  //   return false;
+  // }
+
+  @Get(API_SYNC_NEW_RECORD)
+  syncNewRecord() {
+    return this.projectService.syncNewRecord();
   }
 
   @Get(API_STAT_COMPLETION)

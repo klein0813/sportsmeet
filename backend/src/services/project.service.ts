@@ -61,6 +61,13 @@ export class ProjectService {
     return false;
   }
 
+  syncNewRecord() {
+    return this.projectModel.updateMany({ newRecord: { $ne: null } }, [
+      { $set: { record: '$newRecord' } },
+      { $unset: 'newRecord' },
+    ]);
+  }
+
   async statCompletion() {
     const data = await this.projectModel.aggregate([
       // { $match: { flag: 2026 } },
