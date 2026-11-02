@@ -637,7 +637,7 @@ export class RecordService {
         },
       },
       {
-        $sort: { projectGroup: 1, projectName: 1, sortScore: -1 },
+        $sort: { category: 1, projectGroup: 1, projectName: 1, sortScore: -1 },
       },
       // 3. 隐藏虚拟字段（如果不需要返回给前端）
       {

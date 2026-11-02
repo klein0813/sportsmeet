@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-// import * as Excel from 'exceljs';
+import * as Excel from 'exceljs';
 import { AthleteService } from '../services/athlete.service';
 import {
   API_ATHLETE,
@@ -8,11 +8,11 @@ import {
   API_ID,
   API_BATCH,
   API_SID,
-  // GRADE_KV_MAPPING,
-  // PROJECT_NAME_MAPPING,
-  // GENDER_KV_MAPPING,
+  GRADE_KV_MAPPING,
+  PROJECT_NAME_MAPPING,
+  GENDER_KV_MAPPING,
 } from 'src/utils/constants';
-// import * as path from 'path';
+import * as path from 'path';
 
 @Controller(API_ATHLETE)
 export class AthleteController {
@@ -64,59 +64,49 @@ export class AthleteController {
     return this.athleteService.findByName(query.name);
   }
 
-  // @Get('init')
-  // async init() {
-  //   const workbook = new Excel.Workbook();
-  //   const filePath = path.resolve(process.cwd(), 'assets', '报名表.xlsx');
-  //   await workbook.xlsx.readFile(filePath);
-  //   const worksheet = workbook.getWorksheet(1);
+  @Get('init')
+  async init() {
+    const workbook = new Excel.Workbook();
+    const filePath = path.resolve(process.cwd(), 'assets', '报名表.xlsx');
+    await workbook.xlsx.readFile(filePath);
+    const worksheet = workbook.getWorksheet(1);
 
-  //   const athletes = {};
-  //   // 从第 2 行开始遍历（跳过第 1 行表头）
-  //   worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-  //     if (rowNumber === 1) return; // 跳过表头
+    const athletes = {};
+    // 从第 2 行开始遍历（跳过第 1 行表头）
+    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+      if (rowNumber === 1) return; // 跳过表头
 
-  //     // 获取单个单元格的值
-  //     const sid = row.getCell(2).value as string; // 号码
-  //     const project1 = PROJECT_NAME_MAPPING[row.getCell(6).value as string]; // 项目
-  //     const project2 = row.getCell(7).value as string; // 项目
-  //     const grade = GRADE_KV_MAPPING[row.getCell(1).value as string]; // 年级
-  //     const className = row.getCell(3).value; // 班级
-  //     const gender = GENDER_KV_MAPPING[row.getCell(4).value as string]; // 性别
-  //     const name = row.getCell(5).value; // 姓名
-  //     const projects = [project1];
-  //     if (project2 && project2 != project1) {
-  //       projects.push(PROJECT_NAME_MAPPING[project2]);
-  //     }
-  //     athletes[sid] = {
-  //       sid,
-  //       grade,
-  //       name,
-  //       class: className,
-  //       gender,
-  //       projects,
-  //       flag: '2026',
-  //     };
-  //   });
-  //   this.athleteService.batchInsert(Object.values(athletes));
+      // 获取单个单元格的值
+      const sid = row.getCell(2).value as string; // 号码
+      const project1 = PROJECT_NAME_MAPPING[row.getCell(6).value as string]; // 项目
+      const project2 = row.getCell(7).value as string; // 项目
+      const grade = GRADE_KV_MAPPING[row.getCell(1).value as string]; // 年级
+      const className = row.getCell(3).value; // 班级
+      const gender = GENDER_KV_MAPPING[row.getCell(4).value as string]; // 性别
+      const name = row.getCell(5).value; // 姓名
+      const projects = [project1];
+      if (project2 && project2 != project1) {
+        projects.push(PROJECT_NAME_MAPPING[project2]);
+      }
+      athletes[sid] = {
+        sid,
+        grade,
+        name,
+        class: className,
+        gender,
+        projects,
+        flag: '2026',
+      };
+    });
+    this.athleteService.batchInsert(Object.values(athletes));
 
-  //   return true;
-  // }
+    return true;
+  }
 
   @Get(API_ID)
   findById(@Param() params: any) {
     return this.athleteService.findById(params.id);
   }
-
-  // @Post()
-  // create(@Body() body: any) {
-  //   return this.athleteService.create(
-  //     body.name,
-  //     body.type,
-  //     body.group,
-  //     body.record,
-  //   );
-  // }
 
   @Post(API_BATCH)
   batchInsert(@Body() body: any) {
