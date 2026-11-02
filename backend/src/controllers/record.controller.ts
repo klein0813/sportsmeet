@@ -158,7 +158,7 @@ export class RecordController {
       { header: '名次', key: 'ranking' },
       { header: '积分', key: 'score' },
     ];
-    const q = {};
+    const q = { round: { $in: [2, 3] } };
     if (query?.top) {
       q['ranking'] = { $lte: parseInt(query.top) };
     }
