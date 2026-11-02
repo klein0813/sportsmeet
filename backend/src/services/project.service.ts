@@ -62,10 +62,26 @@ export class ProjectService {
   }
 
   syncNewRecord() {
-    return this.projectModel.updateMany({ newRecord: { $ne: null } }, [
-      { $set: { record: '$newRecord' } },
-      { $unset: 'newRecord' },
-    ]);
+    // return this.projectModel.updateMany({ newRecord: { $ne: null } }, [
+    //   { $set: { record: '$newRecord' } },
+    //   { $unset: 'newRecord' },
+    // ]);
+    return this.projectModel.updateMany(
+      {}, // 处理所有项目
+      [
+        // 阶段 1：如果有 newRecord，则赋值给 record；如果没有，保持 record 原值。无论如何都重置状态。
+        {
+          $set: {
+            record: { $ifNull: ['$newRecord', '$record'] },
+            grade1Done: false,
+            grade2Done: false,
+            grade3Done: false,
+          },
+        },
+        // 阶段 2：删除 newRecord
+        { $unset: 'newRecord' },
+      ],
+    );
   }
 
   async statCompletion() {
